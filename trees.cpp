@@ -32,10 +32,10 @@ Tree::Tree(int triggerPin)
 
 
 
-void Tree::setupTree(int cocoonValues[1][5], int spiderValues[1][4][4], Adafruit_MCP23017* mcp)
+void Tree::setupTree(int cocoonValues[1][6], int spiderValues[1][4][4]) // , Adafruit_MCP23017* mcp)
 {
 
-	if(!this->setupCocoons(cocoonValues, mcp))
+	if(!this->setupCocoons(cocoonValues)) //, mcp))
 	{
 		Serial.println("ERROR: Cocoon setup");
 	}
@@ -61,22 +61,22 @@ int Tree::setupTriggers()
 }
 
 // Setup values and pinmode for cocoons
-int Tree::setupCocoons(int cocoonValues[1][5], Adafruit_MCP23017* mcp)
+int Tree::setupCocoons(int cocoonValues[1][6]) //, Adafruit_MCP23017* mcp)
 {
 	// Set values and for cocoons
 	for(int i = 0; i < nCocoons; i++)
 	{
-		this->cocoons[i]->setCocoonValues(cocoonValues[i][0], cocoonValues[i][1], cocoonValues[i][2], cocoonValues[i][3], cocoonValues[i][4]);	
+		this->cocoons[i]->setCocoonValues((Adafruit_MCP23017*)cocoonValues[i][0], cocoonValues[i][1], cocoonValues[i][2], cocoonValues[i][3], cocoonValues[i][4], cocoonValues[i][5]);	
 	}	
 
 	// Set pinmode for cocoons
 	for(int i = 0; i < nCocoons; i++)
 	{
 		Serial.println(this->cocoons[i]->inPin);
-		mcp->pinMode(this->cocoons[i]->inPin, OUTPUT);
-		mcp->pinMode(this->cocoons[i]->outPin, OUTPUT);	
-		mcp->pullUp(this->cocoons[i]->inPin, HIGH);
-		mcp->pullUp(this->cocoons[i]->outPin, HIGH);	
+		this->cocoons[i]->mcp->pinMode(this->cocoons[i]->inPin, OUTPUT);
+		this->cocoons[i]->mcp->pinMode(this->cocoons[i]->outPin, OUTPUT);	
+		this->cocoons[i]->mcp->pullUp(this->cocoons[i]->inPin, HIGH);
+		this->cocoons[i]->mcp->pullUp(this->cocoons[i]->outPin, HIGH);	
 	}
 
 	Serial.println("Cocoons Initialized!");

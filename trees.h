@@ -32,8 +32,8 @@ public:
 
 	Tree(int triggerPin);
 
-	void setupTree(int cocoonValues[1][5], int spiderValues[1][4][4], Adafruit_MCP23017* mcp);
-	int setupCocoons(int cocoonValues[1][5], Adafruit_MCP23017* mcp);
+	void setupTree(int cocoonValues[1][6], int spiderValues[1][4][4]); //, Adafruit_MCP23017* mcp);
+	int setupCocoons(int cocoonValues[1][6]); // , Adafruit_MCP23017* mcp);
 	int setupSpiders(int spiderValues[1][4][4]);
 	int setupTriggers();
 

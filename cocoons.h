@@ -19,13 +19,13 @@ public:
 	int outPin;
 	int outDuration;
 	int ledPin;
-	// Adafruit_MCP23017* mcp;
+	Adafruit_MCP23017* mcp;
 
 	Cocoon();
 	
-	void setCocoonValues(int inPin, int outPin, int ledPin, int inDuration, int outDuration);
-	void breathIn(Adafruit_MCP23017* mcp);
-	void breathOut(Adafruit_MCP23017* mcp);
+	void setCocoonValues(Adafruit_MCP23017* mcp, int inPin, int outPin, int ledPin, int inDuration, int outDuration);
+	void breathIn(); // Adafruit_MCP23017* mcp);
+	void breathOut(); // Adafruit_MCP23017* mcp);
 
 };
 
