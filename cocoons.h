@@ -9,7 +9,7 @@
 #define SRC_COCOONS_H_
 #include <Wire.h>
 #include "Adafruit_MCP23017.h"
-// #include "Tlc5940.h"
+#include "Tlc5940.h"
 
 class Cocoon
 {
@@ -24,8 +24,9 @@ public:
 	Cocoon();
 	
 	void setCocoonValues(Adafruit_MCP23017* mcp, int inPin, int outPin, int ledPin, int inDuration, int outDuration);
-	void breathIn(); // Adafruit_MCP23017* mcp);
-	void breathOut(); // Adafruit_MCP23017* mcp);
+	void breathIn(); 
+	void breathOut(); 
+	void blinkLED();
 
 };
 

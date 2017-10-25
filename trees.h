@@ -17,23 +17,24 @@
 #include "spiders.h"
 #include <Wire.h>
 #include "Adafruit_MCP23017.h"
+#include "Tlc5940.h"
 
 #define N_COCOONCS	1
 
 class Tree
 {
 public:
-	Cocoon** cocoons;
-	Spider** spiders;
+	Cocoon* cocoons[12];
+	Spider* spiders[2];
 	int nCocoons;
 	int nSpiders;
 
 	int trigger;
 
-	Tree(int triggerPin);
+	Tree();
 
-	void setupTree(int cocoonValues[1][6], int spiderValues[1][4][4]); //, Adafruit_MCP23017* mcp);
-	int setupCocoons(int cocoonValues[1][6]); // , Adafruit_MCP23017* mcp);
+	void setupTree(int cocoonValues[12][6], int spiderValues[1][4][4]); 
+	int setupCocoons(int cocoonValues[12][6]); 
 	int setupSpiders(int spiderValues[1][4][4]);
 	int setupTriggers();
 

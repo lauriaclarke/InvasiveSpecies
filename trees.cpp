@@ -4,64 +4,60 @@
 #include "spiders.h"
 #include <Wire.h>
 #include "Adafruit_MCP23017.h"
-// #include "Tlc5940.h"
+#include "Tlc5940.h"
 
 
-Tree::Tree(int triggerPin)
+Tree::Tree()
 {
-	// Setup cocoon container
-	this->nCocoons = N_COCOONCS;
-	this->cocoons = new Cocoon* [nCocoons];
+	this->nCocoons = 12;
+	this->nSpiders = 2;
 
-	for(int i = 0; i < nCocoons; i++)
-	{
-		this->cocoons[i] = new Cocoon();
-	}	
+	// for(int i = 0; i < nCocoons; i++)
+	// {
+	// 	this->cocoons[i] = new Cocoon();
+	// }	
 
-	// Setup spider container
-	this->nSpiders = 1;
-	this->spiders = new Spider* [nSpiders];
 
-	for(int i = 0; i < nCocoons; i++)
-	{
-		this->spiders[i] = new Spider();
-	}	
+	// for(int i = 0; i < nCocoons; i++)
+	// {
+	// 	this->spiders[i] = new Spider();
+	// }	
 
-	this->trigger = triggerPin;
+	this->trigger = 1;
 }
 
 
 
-void Tree::setupTree(int cocoonValues[1][6], int spiderValues[1][4][4]) // , Adafruit_MCP23017* mcp)
+void Tree::setupTree(int cocoonValues[12][6], int spiderValues[1][4][4])
 {
 
-	if(!this->setupCocoons(cocoonValues)) //, mcp))
+	if(!this->setupCocoons(cocoonValues))
 	{
 		Serial.println("ERROR: Cocoon setup");
 	}
 
-	if(!this->setupSpiders(spiderValues))
-	{
-		Serial.println("ERROR: Spider setup");
-	}
+	// if(!this->setupSpiders(spiderValues))
+	// {
+	// 	Serial.println("ERROR: Spider setup");
+	// }
 
-	if(!this->setupTriggers())
-	{
-		Serial.println("ERROR: Trigger setup");
-	}
+	// if(!this->setupTriggers())
+	// {
+	// 	Serial.println("ERROR: Trigger setup");
+	// }
 
 }
 
 // Set trigger pins
 int Tree::setupTriggers()
 {
-	pinMode(this->trigger, INPUT);
+	// pinMode(this->trigger, INPUT);
 
-	return 1;
+	// return 1;
 }
 
 // Setup values and pinmode for cocoons
-int Tree::setupCocoons(int cocoonValues[1][6]) //, Adafruit_MCP23017* mcp)
+int Tree::setupCocoons(int cocoonValues[12][6])
 {
 	// Set values and for cocoons
 	for(int i = 0; i < nCocoons; i++)
