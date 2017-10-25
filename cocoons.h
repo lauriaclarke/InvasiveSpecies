@@ -15,13 +15,22 @@ class Cocoon
 {
 public:
 	int inPin;
-	int inDuration;
 	int outPin;
-	int outDuration;
 	int ledPin;
+
+	long inDuration;
+	long outDuration;
+	long preWait;
+	long postWait;
+	unsigned long T2;
+
+	int state;
+
 	Adafruit_MCP23017* mcp;
 
+
 	Cocoon();
+
 	
 	void setCocoonValues(Adafruit_MCP23017* mcp, int inPin, int outPin, int ledPin, int inDuration, int outDuration);
 	void breathIn(); 
