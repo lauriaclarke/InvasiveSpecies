@@ -28,7 +28,7 @@ Tree::Tree()
 
 
 
-void Tree::setupTree(int cocoonValues[12][6], int spiderValues[1][4][4])
+void Tree::setupTree(int cocoonValues[12][7], int spiderValues[1][4][4])
 {
 
 	if(!this->setupCocoons(cocoonValues))
@@ -57,22 +57,21 @@ int Tree::setupTriggers()
 }
 
 // Setup values and pinmode for cocoons
-int Tree::setupCocoons(int cocoonValues[12][6])
+int Tree::setupCocoons(int cocoonValues[12][7])
 {
 	// Set values and for cocoons
 	for(int i = 0; i < nCocoons; i++)
 	{
-		this->cocoons[i]->setCocoonValues((Adafruit_MCP23017*)cocoonValues[i][0], cocoonValues[i][1], cocoonValues[i][2], cocoonValues[i][3], cocoonValues[i][4], cocoonValues[i][5]);	
+		this->cocoons[i].setCocoonValues((Adafruit_MCP23017*)cocoonValues[i][0], cocoonValues[i][1], cocoonValues[i][2], cocoonValues[i][3], cocoonValues[i][4], cocoonValues[i][5], cocoonValues[i][6]);	
 	}	
 
 	// Set pinmode for cocoons
 	for(int i = 0; i < nCocoons; i++)
 	{
-		Serial.println(this->cocoons[i]->inPin);
-		this->cocoons[i]->mcp->pinMode(this->cocoons[i]->inPin, OUTPUT);
-		this->cocoons[i]->mcp->pinMode(this->cocoons[i]->outPin, OUTPUT);	
-		this->cocoons[i]->mcp->pullUp(this->cocoons[i]->inPin, HIGH);
-		this->cocoons[i]->mcp->pullUp(this->cocoons[i]->outPin, HIGH);	
+		this->cocoons[i].mcp->pinMode(this->cocoons[i].inPin, OUTPUT);
+		this->cocoons[i].mcp->pinMode(this->cocoons[i].outPin, OUTPUT);	
+		this->cocoons[i].mcp->pullUp(this->cocoons[i].inPin, HIGH);
+		this->cocoons[i].mcp->pullUp(this->cocoons[i].outPin, HIGH);	
 	}
 
 	Serial.println("Cocoons Initialized!");
@@ -82,26 +81,26 @@ int Tree::setupCocoons(int cocoonValues[12][6])
 // Setup values and pinmodes for spiders
 int Tree::setupSpiders(int spiderValues[1][4][4])
 {
-	// Set values and for spiders
-	for(int i = 0; i < nSpiders; i++)
-	{
-		this->spiders[i]->setSpiderValues(spiderValues[i][0], spiderValues[i][1], spiderValues[i][2], spiderValues[i][3]);	
-	}	
+	// // Set values and for spiders
+	// for(int i = 0; i < nSpiders; i++)
+	// {
+	// 	this->spiders[i]->setSpiderValues(spiderValues[i][0], spiderValues[i][1], spiderValues[i][2], spiderValues[i][3]);	
+	// }	
 
 
-	// Set pinmode for spiders
-	for(int i = 0; i < nSpiders; i++)
-	{
-		// Setup LED pin
-		pinMode(this->spiders[i]->ledPin[0], OUTPUT);
-		pinMode(this->spiders[i]->fanPin[0], OUTPUT);	
+	// // Set pinmode for spiders
+	// for(int i = 0; i < nSpiders; i++)
+	// {
+	// 	// Setup LED pin
+	// 	pinMode(this->spiders[i]->ledPin[0], OUTPUT);
+	// 	pinMode(this->spiders[i]->fanPin[0], OUTPUT);	
 
-		// Setup four stepper pins
-		for(int j = 0; j < 4; j++)
-		{
-			pinMode(this->spiders[i]->stepperPins[j], OUTPUT);
-		}
-	}
+	// 	// Setup four stepper pins
+	// 	for(int j = 0; j < 4; j++)
+	// 	{
+	// 		pinMode(this->spiders[i]->stepperPins[j], OUTPUT);
+	// 	}
+	// }
 
 	return 1;
 }

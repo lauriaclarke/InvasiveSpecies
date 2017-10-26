@@ -17,11 +17,12 @@ public:
 	int inPin;
 	int outPin;
 	int ledPin;
+	int ledHigh;
+	int ledLow;
 
-	long inDuration;
-	long outDuration;
-	long preWait;
-	long postWait;
+	long inhaleTime;
+	long exhaleTime;
+	long waitTime;
 	unsigned long T2;
 
 	int state;
@@ -30,9 +31,9 @@ public:
 
 
 	Cocoon();
-
 	
-	void setCocoonValues(Adafruit_MCP23017* mcp, int inPin, int outPin, int ledPin, int inDuration, int outDuration);
+	void setCocoonValues(Adafruit_MCP23017* mcp, int inPin, int outPin, int ledPin, long inhaleTime, long exhaleTime, long waitTime);
+	void breathe();
 	void breathIn(); 
 	void breathOut(); 
 	void blinkLED();
