@@ -11,18 +11,22 @@
 #include "Adafruit_MCP23017.h"
 #include "Tlc5940.h"
 
+#define FAST_THRESHOLD	50
+
 class Cocoon
 {
 public:
 	int inPin;
 	int outPin;
 	int ledPin;
-	int ledHigh;
-	int ledLow;
+
+	int ledMax;
+	int ledMin;
 
 	long inhaleTime;
 	long exhaleTime;
 	long waitTime;
+
 	unsigned long T2;
 
 	int state;
@@ -34,6 +38,7 @@ public:
 	
 	void setCocoonValues(Adafruit_MCP23017* mcp, int inPin, int outPin, int ledPin, long inhaleTime, long exhaleTime, long waitTime);
 	void breathe();
+	void breatheFaster();
 	void breathIn(); 
 	void breathOut(); 
 	void blinkLED();
