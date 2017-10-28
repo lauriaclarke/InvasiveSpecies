@@ -1,21 +1,23 @@
-void breathe() 
+** ADD SW RESET FUCNTIONALITY
+
+
+
+if(PIR triggered)
 {
-	// check to see if it's time to change the state of the LED
-	unsigned long T1 = millis();
+	changeCocoonValues( decrease time )
+
+}
 
 
 
-	if((state == wait) && (T1 - T2 >= waitTime)) 
-	{
-		state = inhale; 
-		T2 = T1; 
-		this->
-	}
-	else if ((ledState == LOW) && (currentMillis - previousMillis >= OffTime)) {
-	} 
-	 
-	ledState = HIGH; // turn it on previousMillis = currentMillis; digitalWrite(ledPin, ledState);
-	// Remember the time
-	// Update the actual LED
+if(PIR triggered)
+{
+	breatheFaster()
 
+}
+
+
+breatheFaster()
+{
+	
 }

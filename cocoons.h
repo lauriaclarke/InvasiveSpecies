@@ -38,6 +38,7 @@ public:
 	
 	void setCocoonValues(Adafruit_MCP23017* mcp, int inPin, int outPin, int ledPin, long inhaleTime, long exhaleTime, long waitTime);
 	void breathe();
+	void breatheNoFade();
 	void breatheFaster();
 	void breathIn(); 
 	void breathOut(); 

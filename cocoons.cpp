@@ -27,6 +27,41 @@ void Cocoon::setCocoonValues(Adafruit_MCP23017* mcp, int inPin, int outPin, int 
 }
 
 
+void Cocoon::breatheNoFade() 
+{
+	unsigned long T1 = millis();
+
+	if((state == 0) && (T1 - T2 >= waitTime)) 
+	{
+		state = 1; 
+		T2 = T1; 
+		mcp->digitalWrite(inPin, HIGH);
+		Tlc.set(ledPin, HIGH);
+	}
+	else if ((this->state == 1) && (T1 - T2 >= inhaleTime)) 
+	{
+		state = 2; 
+		T2 = T1; 
+		mcp->digitalWrite(inPin, LOW);
+		mcp->digitalWrite(outPin, HIGH);
+	} 
+	else if ((this->state == 2) && (T1 - T2 >= exhaleTime)) 
+	{
+		state = 0; 
+		T2 = T1; 
+		mcp->digitalWrite(outPin, LOW);
+		Tlc.set(ledPin, LOW);
+	} 
+
+	Tlc.update();
+}
+
+
+
+
+
+
+
 void Cocoon::breathe() 
 {
 	unsigned long T1 = millis();
