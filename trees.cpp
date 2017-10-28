@@ -4,6 +4,7 @@
 #include "spiders.h"
 #include <Wire.h>
 #include "Adafruit_MCP23017.h"
+#include <MCPStepper.h>
 #include "Tlc5940.h"
 
 
@@ -81,26 +82,23 @@ int Tree::setupCocoons(int cocoonValues[12][7])
 // Setup values and pinmodes for spiders
 int Tree::setupSpiders(int spiderValues[1][4][4])
 {
-	// // Set values and for spiders
-	// for(int i = 0; i < nSpiders; i++)
-	// {
-	// 	this->spiders[i]->setSpiderValues(spiderValues[i][0], spiderValues[i][1], spiderValues[i][2], spiderValues[i][3]);	
-	// }	
+	// Set values and for spiders
+	for(int i = 0; i < nSpiders; i++)
+	{
+		this->spiders[i]->setSpiderValues(spiderValues[i][0], spiderValues[i][1], spiderValues[i][2], spiderValues[i][3]);
+	}	
 
 
-	// // Set pinmode for spiders
-	// for(int i = 0; i < nSpiders; i++)
-	// {
-	// 	// Setup LED pin
-	// 	pinMode(this->spiders[i]->ledPin[0], OUTPUT);
-	// 	pinMode(this->spiders[i]->fanPin[0], OUTPUT);	
+	// Set pinmode for spiders
+	for(int i = 0; i < nSpiders; i++)
+	{
+		// Setup LED pin
+		this->spiders[i].mcp->pinMode(ledPin, OUTPUT);
+		this->spiders[i].mcp->pinMode(fanPin, OUTPUT);	
 
-	// 	// Setup four stepper pins
-	// 	for(int j = 0; j < 4; j++)
-	// 	{
-	// 		pinMode(this->spiders[i]->stepperPins[j], OUTPUT);
-	// 	}
-	// }
+		// Setup Stepper
+		this->spiders[i].spiderStepper->init();
+	}
 
 	return 1;
 }

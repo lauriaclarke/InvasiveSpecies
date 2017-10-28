@@ -8,15 +8,23 @@
 #ifndef SRC_SPIDERS_H_
 #define SRC_SPIDERS_H_
 
+#include <MCPStepper.h>
 
 class Spider
 {
 public:
-	int* stepperPins;
-	int* fanPin;
-	int* ledPin;
-	int* totalSteps;
-	// Stepper spiderStepper; 
+	int stepperPins[4];
+	int fanPin;
+	int ledPin;
+	int totalSteps;
+
+	int fanState;
+	int ledState;
+
+	unsigned long T2;
+	
+	Adafruit_MCP23017* mcp;
+	Stepper* spiderStepper; 
 
 	Spider();
 
