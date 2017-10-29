@@ -34,9 +34,9 @@ public:
 
 	Tree();
 
-	void setupTree(int cocoonValues[12][7], int spiderValues[1][4][4]); 
+	void setupTree(int cocoonValues[12][7], int spiderValues[1][4]); 
 	int setupCocoons(int cocoonValues[12][7]); 
-	int setupSpiders(int spiderValues[1][4][4]);
+	int setupSpiders(int spiderValues[1][4]);
 	int setupTriggers();
 
 	int checkTrigger();

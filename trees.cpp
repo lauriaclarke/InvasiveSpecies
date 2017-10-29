@@ -4,7 +4,7 @@
 #include "spiders.h"
 #include <Wire.h>
 #include "Adafruit_MCP23017.h"
-// #include <MCPStepper.h>
+#include <MCPStepper.h>
 #include "Tlc5940.h"
 
 
@@ -29,7 +29,7 @@ Tree::Tree()
 
 
 
-void Tree::setupTree(int cocoonValues[12][7], int spiderValues[1][4][4])
+void Tree::setupTree(int cocoonValues[12][7], int spiderValues[1][4])
 {
 
 	if(!this->setupCocoons(cocoonValues))
@@ -37,10 +37,10 @@ void Tree::setupTree(int cocoonValues[12][7], int spiderValues[1][4][4])
 		Serial.println("ERROR: Cocoon setup");
 	}
 
-	// if(!this->setupSpiders(spiderValues))
-	// {
-	// 	Serial.println("ERROR: Spider setup");
-	// }
+	if(!this->setupSpiders(spiderValues))
+	{
+		Serial.println("ERROR: Spider setup");
+	}
 
 	// if(!this->setupTriggers())
 	// {
@@ -49,13 +49,6 @@ void Tree::setupTree(int cocoonValues[12][7], int spiderValues[1][4][4])
 
 }
 
-// Set trigger pins
-int Tree::setupTriggers()
-{
-	// pinMode(this->trigger, INPUT);
-
-	// return 1;
-}
 
 // Setup values and pinmode for cocoons
 int Tree::setupCocoons(int cocoonValues[12][7])
@@ -82,25 +75,28 @@ int Tree::setupCocoons(int cocoonValues[12][7])
 }
 
 // Setup values and pinmodes for spiders
-int Tree::setupSpiders(int spiderValues[1][4][4])
+int Tree::setupSpiders(int spiderValues[1][4])
 {
-	// // Set values and for spiders
-	// for(int i = 0; i < nSpiders; i++)
-	// {
-	// 	this->spiders[i]->setSpiderValues(spiderValues[i][0], spiderValues[i][1], spiderValues[i][2], spiderValues[i][3]);
-	// }	
+	// Set values and for spiders
+	for(int i = 0; i < nSpiders; i++)
+	{
+		this->spiders[i].setSpiderValues((Stepper*)spiderValues[i][0], (Adafruit_MCP23017*)spiderValues[i][1], spiderValues[i][2], spiderValues[i][3]);
+	}	
+
+	// Set pinmode for spiders
+	for(int i = 0; i < nSpiders; i++)
+	{
+		// Setup LED pin
+		this->spiders[i].mcp->pinMode(this->spiders[i].ledPin, OUTPUT);
+		this->spiders[i].mcp->pinMode(this->spiders[i].fanPin, OUTPUT);	
 
 
-	// // Set pinmode for spiders
-	// for(int i = 0; i < nSpiders; i++)
-	// {
-	// 	// Setup LED pin
-	// 	this->spiders[i].mcp->pinMode(ledPin, OUTPUT);
-	// 	this->spiders[i].mcp->pinMode(fanPin, OUTPUT);	
+		this->spiders[i].mcp->digitalWrite(this->spiders[i].ledPin, LOW);
+		this->spiders[i].mcp->digitalWrite(this->spiders[i].fanPin, LOW);	
 
-	// 	// Setup Stepper
-	// 	this->spiders[i].spiderStepper->init();
-	// }
+		// Setup Stepper
+		this->spiders[i].spiderStepper->init();
+	}
 
 	return 1;
 }
@@ -109,17 +105,10 @@ int Tree::setupSpiders(int spiderValues[1][4][4])
 //-------------------------------------------------------------------
 
 
-int Tree::checkTrigger()
-{
-	if(digitalRead(trigger))
-	{
-		return 1;
-	}
-	else
-	{
-		return 0;
-	}
-}
+
+
+
+
 
 
 int runSpider(int sound, int spider)
@@ -135,9 +124,3 @@ int runSpider(int sound, int spider)
 }
 
 
-int runCocoons()
-{
-	// Move the cocoons around.
-	// -> Should have arguments for how many and how fast?
-	// -> Perhaps groupings would work well?
-}

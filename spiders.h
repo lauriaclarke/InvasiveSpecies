@@ -8,16 +8,14 @@
 #ifndef SRC_SPIDERS_H_
 #define SRC_SPIDERS_H_
 
-// #include <MCPStepper.h>	
+#include <MCPStepper.h>	
 #include "Adafruit_MCP23017.h"
 
 class Spider
 {
 public:
-	int stepperPins[4];
 	int fanPin;
 	int ledPin;
-	int totalSteps;
 
 	int fanState;
 	int ledState;
@@ -25,16 +23,16 @@ public:
 	unsigned long T2;
 	
 	Adafruit_MCP23017* mcp;
-	// Stepper* spiderStepper; 
+	Stepper* spiderStepper; 
 
 	Spider();
 
-	void setSpiderValues(int stepperPins[4], int fanPin[1], int ledPin[1], int totalSteps[1]);
+	void setSpiderValues(Stepper* spiderStepper, Adafruit_MCP23017* mcp, int fanPin, int ledPin);
 	void raiseSpider(int distance, int speed);
 	void lowerSpider(int distance, int speed);
-	void animateSpider(int duration, int interval);
-	void spinFans(int duration);
-	void blinkLED(int duration, int interval);
+	// void animateSpider(int duration, int interval);
+	void spinFans(int onInterval, int offInterval);
+	void blinkLED(int onInterval, int offInterval);
 };
 
 

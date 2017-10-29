@@ -1,46 +1,105 @@
 #include "Arduino.h"
 #include "spiders.h"
-// #include <MCPStepper.h>
+#include <MCPStepper.h>
 
 
 Spider::Spider(){}
 
-void Spider::setSpiderValues(int stepperPins[4], int fanPin[1], int ledPin[1], int totalSteps[1])
+void Spider::setSpiderValues(Stepper* spiderStepper, Adafruit_MCP23017* mcp, int fanPin, int ledPin)
 {
-	// this->stepperPins = stepperPins;
-	// this->fanPin = fanPin;
-	// this->ledPin = ledPin;
+	this->spiderStepper = spiderStepper;
+	this->mcp = mcp;
+	this->fanPin = fanPin;
+	this->ledPin = ledPin;
+
+	this->T2 = 0;
 	this->fanState = LOW;
 	this->ledState = LOW;
-	// this->totalSteps = totalSteps;
 }
 
 
-void Spider::animateSpider(int duration, int interval)
+void Spider::raiseSpider(int distance, int speed)
 {
-	int N = duration / interval;
-
-	analogWrite(this->fanPin, 100);
-
-	for(int i = 0; i < N; i++)
-	{
-		digitalWrite(this->ledPin, HIGH);
-		delay(interval);
-		digitalWrite(this->ledPin, LOW);
-		delay(interval);
-	}
-
-	analogWrite(this->fanPin, LOW);
+	spiderStepper->setSpeed(speed);
+	spiderStepper->step(distance);
 }
 
 
-
-void Spider::spinFans(int duration)
+void Spider::lowerSpider(int distance, int speed)
 {
-	digitalWrite(this->fanPin, HIGH);
-	delay(duration);
-	digitalWrite(this->fanPin, HIGH);
+	spiderStepper->setSpeed(speed);
+	spiderStepper->step(-distance);
 }
+
+
+
+void Spider::blinkLED(int onInterval, int offInterval)
+{
+  unsigned long T1 = millis();
+ 
+  if((ledState == LOW) && (T1 - T2 >= onInterval)) 
+  {
+  	ledState = HIGH;
+    T2 = T1; 
+    digitalWrite(ledPin, ledState);
+  }
+  if((ledState == HIGH) && (T1 - T2 >= offInterval)) 
+  {
+  	ledState = LOW;
+    T2 = T1; 
+    digitalWrite(ledPin, ledState);
+  }
+}
+
+
+void Spider::spinFans(int onInterval, int offInterval)
+{
+  unsigned long T1 = millis();
+ 
+  if((ledState == LOW) && (T1 - T2 >= onInterval)) 
+  {
+  	ledState = HIGH;
+    T2 = T1; 
+    mcp->digitalWrite(fanPin, fanState);
+  }
+  if((ledState == HIGH) && (T1 - T2 >= offInterval)) 
+  {
+  	ledState = LOW;
+    T2 = T1; 
+    mcp->digitalWrite(fanPin, fanState);
+  }
+}
+
+
+
+// OLD -----------
+
+
+// void Spider::animateSpider(int duration, int interval)
+// {
+// 	int N = duration / interval;
+
+// 	analogWrite(this->fanPin, 100);
+
+// 	for(int i = 0; i < N; i++)
+// 	{
+// 		digitalWrite(this->ledPin, HIGH);
+// 		delay(interval);
+// 		digitalWrite(this->ledPin, LOW);
+// 		delay(interval);
+// 	}
+
+// 	analogWrite(this->fanPin, LOW);
+// }
+
+
+
+// void Spider::spinFans(int duration)
+// {
+// 	digitalWrite(this->fanPin, HIGH);
+// 	delay(duration);
+// 	digitalWrite(this->fanPin, HIGH);
+// }
 
 // void Spider::blinkLED(int duration, int interval)
 // {
@@ -64,15 +123,15 @@ void Spider::spinFans(int duration)
 
 
 
-void Spider::blinkLED(int duration, int interval)
-{
-	int N = duration / interval;
+// void Spider::blinkLED(int duration, int interval)
+// {
+// 	int N = duration / interval;
 
-	for(int i = 0; i < N; i++)
-	{
-		digitalWrite(this->ledPin, HIGH);
-		delay(interval);
-		digitalWrite(this->ledPin	, LOW);
-		delay(interval);
-	}
-}
+// 	for(int i = 0; i < N; i++)
+// 	{
+// 		digitalWrite(this->ledPin, HIGH);
+// 		delay(interval);
+// 		digitalWrite(this->ledPin	, LOW);
+// 		delay(interval);
+// 	}
+// }
