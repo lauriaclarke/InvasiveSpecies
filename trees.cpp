@@ -4,7 +4,7 @@
 #include "spiders.h"
 #include <Wire.h>
 #include "Adafruit_MCP23017.h"
-#include <MCPStepper.h>
+// #include <MCPStepper.h>
 #include "Tlc5940.h"
 
 
@@ -73,6 +73,8 @@ int Tree::setupCocoons(int cocoonValues[12][7])
 		this->cocoons[i].mcp->pinMode(this->cocoons[i].outPin, OUTPUT);	
 		this->cocoons[i].mcp->pullUp(this->cocoons[i].inPin, HIGH);
 		this->cocoons[i].mcp->pullUp(this->cocoons[i].outPin, HIGH);	
+		this->cocoons[i].mcp->digitalWrite(this->cocoons[i].inPin, LOW);
+		this->cocoons[i].mcp->digitalWrite(this->cocoons[i].outPin, LOW);
 	}
 
 	Serial.println("Cocoons Initialized!");
@@ -82,23 +84,23 @@ int Tree::setupCocoons(int cocoonValues[12][7])
 // Setup values and pinmodes for spiders
 int Tree::setupSpiders(int spiderValues[1][4][4])
 {
-	// Set values and for spiders
-	for(int i = 0; i < nSpiders; i++)
-	{
-		this->spiders[i]->setSpiderValues(spiderValues[i][0], spiderValues[i][1], spiderValues[i][2], spiderValues[i][3]);
-	}	
+	// // Set values and for spiders
+	// for(int i = 0; i < nSpiders; i++)
+	// {
+	// 	this->spiders[i]->setSpiderValues(spiderValues[i][0], spiderValues[i][1], spiderValues[i][2], spiderValues[i][3]);
+	// }	
 
 
-	// Set pinmode for spiders
-	for(int i = 0; i < nSpiders; i++)
-	{
-		// Setup LED pin
-		this->spiders[i].mcp->pinMode(ledPin, OUTPUT);
-		this->spiders[i].mcp->pinMode(fanPin, OUTPUT);	
+	// // Set pinmode for spiders
+	// for(int i = 0; i < nSpiders; i++)
+	// {
+	// 	// Setup LED pin
+	// 	this->spiders[i].mcp->pinMode(ledPin, OUTPUT);
+	// 	this->spiders[i].mcp->pinMode(fanPin, OUTPUT);	
 
-		// Setup Stepper
-		this->spiders[i].spiderStepper->init();
-	}
+	// 	// Setup Stepper
+	// 	this->spiders[i].spiderStepper->init();
+	// }
 
 	return 1;
 }

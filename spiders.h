@@ -8,7 +8,8 @@
 #ifndef SRC_SPIDERS_H_
 #define SRC_SPIDERS_H_
 
-#include <MCPStepper.h>
+// #include <MCPStepper.h>	
+#include "Adafruit_MCP23017.h"
 
 class Spider
 {
@@ -24,7 +25,7 @@ public:
 	unsigned long T2;
 	
 	Adafruit_MCP23017* mcp;
-	Stepper* spiderStepper; 
+	// Stepper* spiderStepper; 
 
 	Spider();
 

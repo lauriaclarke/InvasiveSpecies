@@ -18,7 +18,7 @@
 #include <Wire.h>
 #include "Adafruit_MCP23017.h"
 #include "Tlc5940.h"
-#include <MCPStepper.h>
+// #include <MCPStepper.h>
 
 #define N_COCOONCS	1
 
