@@ -18,9 +18,10 @@
 #include <Wire.h>
 #include "Adafruit_MCP23017.h"
 #include "Tlc5940.h"
-// #include <MCPStepper.h>
+#include <MCPStepper.h>
 
-#define N_COCOONCS	1
+#define N_COCOONCS		1
+#define SPIDER_STEPS    800
 
 class Tree
 {
@@ -30,18 +31,20 @@ public:
 	int nCocoons;
 	int nSpiders;
 
-	int trigger;
+	int chirp;
+	int drone;
 
 	Tree();
 
 	void setupTree(int cocoonValues[12][7], int spiderValues[1][4]); 
 	int setupCocoons(int cocoonValues[12][7]); 
 	int setupSpiders(int spiderValues[1][4]);
-	int setupTriggers();
 
-	int checkTrigger();
 	int runSpider(int sound);
 	int runCocoons();
+
+	void testCocoons();
+	void testSpiders();
 };
 
 

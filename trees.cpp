@@ -13,18 +13,8 @@ Tree::Tree()
 	this->nCocoons = 12;
 	this->nSpiders = 2;
 
-	// for(int i = 0; i < nCocoons; i++)
-	// {
-	// 	this->cocoons[i] = new Cocoon();
-	// }	
-
-
-	// for(int i = 0; i < nCocoons; i++)
-	// {
-	// 	this->spiders[i] = new Spider();
-	// }	
-
-	this->trigger = 1;
+	this->chirp = 5;
+	this->drone = 4;
 }
 
 
@@ -37,16 +27,10 @@ void Tree::setupTree(int cocoonValues[12][7], int spiderValues[1][4])
 		Serial.println("ERROR: Cocoon setup");
 	}
 
-	// if(!this->setupSpiders(spiderValues))
-	// {
-	// 	Serial.println("ERROR: Spider setup");
-	// }
-
-	// if(!this->setupTriggers())
-	// {
-	// 	Serial.println("ERROR: Trigger setup");
-	// }
-
+	if(!this->setupSpiders(spiderValues))
+	{
+		Serial.println("ERROR: Spider setup");
+	}
 }
 
 
@@ -96,6 +80,13 @@ int Tree::setupSpiders(int spiderValues[1][4])
 
 		// Setup Stepper
 		this->spiders[i].spiderStepper->init();
+
+		// Raise spider
+		if(this->spiders[i].stepperState == LOW)
+		{
+			this->spiders[i].raiseSpider(SPIDER_STEPS, 40);
+			this->spiders[i].stepperState = HIGH;
+		}
 	}
 
 	return 1;
@@ -105,22 +96,37 @@ int Tree::setupSpiders(int spiderValues[1][4])
 //-------------------------------------------------------------------
 
 
-
-
-
-
-
-
-int runSpider(int sound, int spider)
+void Tree::testCocoons()
 {
-	// Start sounds from speakers and move spiders. 
-	// Argument specifies which sound and spider
-	//
-	// -> Should each speaker play a different sound?
-	// 		If so, shoulds designate by spider.
-	// 		This may be a good idea anyway so motion
-	//	 	of spider can be easily included in method later. 
-	// ...already agreed with
+	for(int i = 0; i < nCocoons)
+	{
+		// Test Fans
+		this->cocoons[i].breathIn();
+		delay(3000);
+		this->cocoons[i].breathOut();
+
+		// Test LED
+		this->cocoons[i].LEDOn();
+		delay(2000);
+		this->cocoons[i].LEDOff();
+	}
+}
+
+void Tree::testSpiders()
+{
+	for(int i = 0; i < nSpiders)
+	{
+		if(this->spiders[i].stepperState == LOW)
+		// Test Fans
+		this->cocoons[i].breathIn();
+		delay(3000);
+		this->cocoons[i].breathOut();
+
+		// Test LED
+		this->cocoons[i].LEDOn();
+		delay(2000);
+		this->cocoons[i].LEDOff();
+	}
 }
 
 

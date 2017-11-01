@@ -19,6 +19,7 @@ public:
 
 	int fanState;
 	int ledState;
+	int stepperState;
 
 	unsigned long T2;
 	

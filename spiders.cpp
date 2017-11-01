@@ -15,6 +15,7 @@ void Spider::setSpiderValues(Stepper* spiderStepper, Adafruit_MCP23017* mcp, int
 	this->T2 = 0;
 	this->fanState = LOW;
 	this->ledState = LOW;
+	this->stepperState = LOW;
 }
 
 

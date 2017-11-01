@@ -58,10 +58,6 @@ void Cocoon::breatheNoFade()
 
 
 
-
-
-
-
 void Cocoon::breathe() 
 {
 	unsigned long T1 = millis();
@@ -138,6 +134,7 @@ void Cocoon::breatheFaster()
 	tlc_updateFades();
 }
 
+// ------------------------------------------------------
 
 void Cocoon::breathIn()
 {
@@ -154,10 +151,24 @@ void Cocoon::breathOut()
 	this->mcp->digitalWrite(this->outPin, LOW);
 }
 
+
+
+void Cocoon::LEDOn()
+{
+    Tlc.set(this->ledPin, 1000);   
+    Tlc.update();
+}
+
+
+void Cocoon::LEDOff()
+{
+    Tlc.set(this->ledPin, 0);   
+    Tlc.update();
+}
+
+
 void Cocoon::blinkLED()
 {
-	Serial.println("YO!");
-	Serial.println(this->ledPin);
     Tlc.set(0, 1000);   
     Tlc.update();
     delay(2000);
