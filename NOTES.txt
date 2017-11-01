@@ -1,23 +1,18 @@
 ** ADD SW RESET FUCNTIONALITY
 
+SW NEED:
+- main state machine for sound, spiders and breathing together.
+- chirp method to be used in sleep mode
+- loud methods for excited mode
+- slep and excited method for spiders
 
 
-if(PIR triggered)
-{
-	changeCocoonValues( decrease time )
-
-}
 
 
 
-if(PIR triggered)
-{
-	breatheFaster()
 
-}
+REWORK NOTES
 
-
-breatheFaster()
-{
-	
-}
+- TLC output 2 is dead on board 01
+- All TLC outputs dead on board 00
+- Boards 01-02 need ULN rework

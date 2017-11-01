@@ -37,10 +37,10 @@ void Tree::setupTree(int cocoonValues[12][7], int spiderValues[1][4])
 		Serial.println("ERROR: Cocoon setup");
 	}
 
-	if(!this->setupSpiders(spiderValues))
-	{
-		Serial.println("ERROR: Spider setup");
-	}
+	// if(!this->setupSpiders(spiderValues))
+	// {
+	// 	Serial.println("ERROR: Spider setup");
+	// }
 
 	// if(!this->setupTriggers())
 	// {
