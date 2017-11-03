@@ -12,10 +12,11 @@ void Spider::setSpiderValues(Stepper* spiderStepper, Adafruit_MCP23017* mcp, int
 	this->fanPin = fanPin;
 	this->ledPin = ledPin;
 
-	this->T2 = 0;
+	this->tFan = 0;
+	this->tLED = 0;
 	this->fanState = LOW;
 	this->ledState = LOW;
-	this->stepperState = LOW;
+	this->stepperState = 0;
 }
 
 
@@ -23,6 +24,7 @@ void Spider::raiseSpider(int distance, int speed)
 {
 	spiderStepper->setSpeed(speed);
 	spiderStepper->step(distance);
+	this->stepperState = this->stepperState + distance;
 }
 
 
@@ -30,45 +32,58 @@ void Spider::lowerSpider(int distance, int speed)
 {
 	spiderStepper->setSpeed(speed);
 	spiderStepper->step(-distance);
+	this->stepperState = this->stepperState - distance;
 }
 
+
+void Spider::turnSpiderOff(int interval)
+{
+	unsigned long T1 = millis();
+
+	if(T1 - tOn >= interval)
+	{
+		mcp->digitalWrite(ledPin, LOW);
+		mcp->digitalWrite(fanPin, LOW);
+	}
+
+}
 
 
 void Spider::blinkLED(int onInterval, int offInterval)
 {
-  unsigned long T1 = millis();
- 
-  if((ledState == LOW) && (T1 - T2 >= onInterval)) 
-  {
-  	ledState = HIGH;
-    T2 = T1; 
-    digitalWrite(ledPin, ledState);
-  }
-  if((ledState == HIGH) && (T1 - T2 >= offInterval)) 
-  {
-  	ledState = LOW;
-    T2 = T1; 
-    digitalWrite(ledPin, ledState);
-  }
+	unsigned long T1 = millis();
+
+	if((ledState == LOW) && (T1 - tLED >= onInterval)) 
+	{
+		ledState = HIGH;
+		tLED = T1; 
+		mcp->digitalWrite(ledPin, ledState);
+	}
+	if((ledState == HIGH) && (T1 - tLED >= offInterval)) 
+	{
+		ledState = LOW;
+		tLED = T1; 
+		mcp->digitalWrite(ledPin, ledState);
+	}
 }
 
 
 void Spider::spinFans(int onInterval, int offInterval)
 {
-  unsigned long T1 = millis();
- 
-  if((ledState == LOW) && (T1 - T2 >= onInterval)) 
-  {
-  	ledState = HIGH;
-    T2 = T1; 
-    mcp->digitalWrite(fanPin, fanState);
-  }
-  if((ledState == HIGH) && (T1 - T2 >= offInterval)) 
-  {
-  	ledState = LOW;
-    T2 = T1; 
-    mcp->digitalWrite(fanPin, fanState);
-  }
+	unsigned long T1 = millis();
+
+	if((ledState == LOW) && (T1 - tFan >= onInterval)) 
+	{
+		ledState = HIGH;
+		tFan = T1; 
+		mcp->digitalWrite(fanPin, fanState);
+	}
+	if((ledState == HIGH) && (T1 - tFan >= offInterval)) 
+	{
+		ledState = LOW;
+		tFan = T1; 
+		mcp->digitalWrite(fanPin, fanState);
+	}
 }
 
 

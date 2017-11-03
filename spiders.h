@@ -21,7 +21,9 @@ public:
 	int ledState;
 	int stepperState;
 
-	unsigned long T2;
+	unsigned long tFan;
+	unsigned long tLED;
+	unsigned long tOn;
 	
 	Adafruit_MCP23017* mcp;
 	Stepper* spiderStepper; 
@@ -34,6 +36,8 @@ public:
 	// void animateSpider(int duration, int interval);
 	void spinFans(int onInterval, int offInterval);
 	void blinkLED(int onInterval, int offInterval);
+	void turnSpiderOff(int interval);
+
 };
 
 

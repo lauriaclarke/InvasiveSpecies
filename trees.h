@@ -22,6 +22,7 @@
 
 #define N_COCOONCS		1
 #define SPIDER_STEPS    800
+#define STEPS_PER_REV   200
 
 class Tree
 {
@@ -36,6 +37,8 @@ public:
 
 	Tree();
 
+	void breatheAll();
+	void breatheFasterAll();
 	void setupTree(int cocoonValues[12][7], int spiderValues[1][4]); 
 	int setupCocoons(int cocoonValues[12][7]); 
 	int setupSpiders(int spiderValues[1][4]);

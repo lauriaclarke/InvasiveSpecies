@@ -41,6 +41,8 @@ public:
 	void breathe();
 	void breatheNoFade();
 	void breatheFaster();
+	void LEDOff();
+	void LEDOn();
 	void breathIn(); 
 	void breathOut(); 
 	void blinkLED();

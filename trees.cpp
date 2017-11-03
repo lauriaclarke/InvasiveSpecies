@@ -96,9 +96,63 @@ int Tree::setupSpiders(int spiderValues[1][4])
 //-------------------------------------------------------------------
 
 
+// void Tree::makeNoise(int noise, int interval)
+// {
+//   unsigned long T1 = millis();
+ 
+//   if(T1 - T2 >= onInterval)
+//   {
+//   	ledState = HIGH;
+//     T2 = T1; 
+//     digitalWrite(ledPin, ledState);
+//   }
+//   if((ledState == HIGH) && (T1 - T2 >= offInterval)) 
+//   {
+//   	ledState = LOW;
+//     T2 = T1; 
+//     digitalWrite(ledPin, ledState);
+//   }
+// }
+
+
+
+void Tree::breatheAll()
+{
+    this->cocoons[0].breathe();
+    this->cocoons[1].breathe();
+    this->cocoons[2].breathe();
+    this->cocoons[3].breathe();
+    this->cocoons[4].breathe();
+    this->cocoons[5].breathe();
+    this->cocoons[6].breathe();
+    this->cocoons[7].breathe();
+    this->cocoons[8].breathe();
+    this->cocoons[9].breathe();
+    this->cocoons[10].breathe();
+    this->cocoons[11].breathe();
+}
+
+void Tree::breatheFasterAll()
+{
+    this->cocoons[0].breatheFaster();
+    this->cocoons[1].breatheFaster();
+    this->cocoons[2].breatheFaster();
+    this->cocoons[3].breatheFaster();
+    this->cocoons[4].breatheFaster();
+    this->cocoons[5].breatheFaster();
+    this->cocoons[6].breatheFaster();
+    this->cocoons[7].breatheFaster();
+    this->cocoons[8].breatheFaster();
+    this->cocoons[9].breatheFaster();
+    this->cocoons[10].breatheFaster();
+    this->cocoons[11].breatheFaster();
+}
+
+
+
 void Tree::testCocoons()
 {
-	for(int i = 0; i < nCocoons)
+	for(int i = 0; i < nCocoons; i++)
 	{
 		// Test Fans
 		this->cocoons[i].breathIn();
@@ -114,18 +168,26 @@ void Tree::testCocoons()
 
 void Tree::testSpiders()
 {
-	for(int i = 0; i < nSpiders)
+	for(int i = 0; i < nSpiders; i++)
 	{
-		if(this->spiders[i].stepperState == LOW)
-		// Test Fans
-		this->cocoons[i].breathIn();
-		delay(3000);
-		this->cocoons[i].breathOut();
+		// Set initial time spider turns on
+		this->spiders[i].tOn = millis();
 
-		// Test LED
-		this->cocoons[i].LEDOn();
-		delay(2000);
-		this->cocoons[i].LEDOff();
+		this->spiders[i].spinFans(1000, 1000);
+		this->spiders[i].blinkLED(2000, 2000);
+		
+		if(this->spiders[i].stepperState == 0)
+		{
+			this->spiders[i].raiseSpider(SPIDER_STEPS, 40);
+		}
+		else if(this->spiders[i].stepperState == SPIDER_STEPS)
+		{
+			this->spiders[i].lowerSpider(SPIDER_STEPS, 40);
+		}
+		else
+		{
+			this->spiders[i].lowerSpider(STEPS_PER_REV, 40);
+		}
 	}
 }
 
