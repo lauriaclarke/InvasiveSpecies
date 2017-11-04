@@ -1,18 +1,47 @@
-** ADD SW RESET FUCNTIONALITY
-
-SW NEED:
-- main state machine for sound, spiders and breathing together.
-- chirp method to be used in sleep mode
-- loud methods for excited mode
-- slep and excited method for spiders
-
-
-
-
-
 
 REWORK NOTES
 
 - TLC output 2 is dead on board 01
 - All TLC outputs dead on board 00
 - Boards 01-02 need ULN rework
+
+
+---------------------------------------------
+
+
+SW NEED:
+- add SW reset
+- do state values need to be declared const in classes
+- progmem for timing array
+
+
+---------------------------------------------
+
+
+NOTES FOR 11/04
+
+Cocoons
+	- Sleep Mode - Some, but not all cocoons take short breathes with a dim LED. All cocoons will eventually take a breath, but few will be moving at the same time.
+	- Awake Mode - All cocoons breathe with increasing frequency and intensity of LED. 'Wait delay' of each cocoon converges on some number, so eventually they're all going at once.
+
+Audio 
+	- Chirp noise will occur periodically in sleep mode.
+	- In awake mode chirp frequency decreases and drone frequency increases to be constant eventually.
+		-> best way to include current functions into loop timing?
+
+Motion Detector 
+	- Make sure super cool new code works...does not trigger when it's not supposed to.
+		-> can detach and re-attach interrupt correctly without affecting timing
+
+Spiders
+	- Had to spend some serious time thinking about how to keep track of the location of the spider. 
+	- Make sure that up and down funtions perform correctly
+	-> Integrate with rest of timing routine. 
+	- Finally, check out why fans don't work.
+
+
+
+
+
+
+
