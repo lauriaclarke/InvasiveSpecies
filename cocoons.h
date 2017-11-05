@@ -26,8 +26,6 @@ public:
 
 	int ledMax;
 	int ledMin;
-	
-	int count;
 
 	int inhaleTime;
 	int exhaleTime;
@@ -43,7 +41,9 @@ public:
 	Cocoon();
 	
 	void setCocoonValues(Adafruit_MCP23017* mcp, int inPin, int outPin, int ledPin); //, long inhaleTime, long exhaleTime, long waitTime, long waitTimeF);
-	void printValues();
+	void resetCocoonValues();
+	void setCocoonTestValues();
+	void turnOff();
 	int  breatheR(unsigned long wT, unsigned long iT, unsigned long eT);
 	void breathe();
 	void breatheNoFade();

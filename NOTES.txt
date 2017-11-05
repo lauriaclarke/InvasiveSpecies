@@ -2,16 +2,13 @@
 
 IN THE GALLERY, DEBUG BROKEN FANS LAST!!!!!!!
 
---------------------
+---------------------------------------------
+AUX PINOUT
 
-REWORK NOTES
-
-- TLC output 2 is dead on board 01
-
-- Boards 01-02 need ULN rework
-- Connect Pins 0 and 2 for PIR interrupt
-
-- mcp1 pins 13, 15 on board 0
+1	.	mcp2.3
+2	.	mcp2.4
+3	.	mcp2.5
+4	.	mcp2.6
 
 ---------------------------------------------
 
@@ -28,7 +25,7 @@ SW NEED:
 NOTES FOR 11/04
 
 	Cocoons
-		- Sleep Mode - Some, but not all cocoons take short breathes with a dim LED. All cocoons will eventually take a breath, 	but few will be moving at the same time.
+√		- Sleep Mode - Some, but not all cocoons take short breathes with a dim LED. All cocoons will eventually take a breath, 			but few will be moving at the same time.
 		- Awake Mode - All cocoons breathe with increasing frequency and intensity of LED. 'Wait delay' of each cocoon converges 	on some number, so eventually they're all going at once.
 	
 	Audio 
@@ -44,7 +41,7 @@ NOTES FOR 11/04
 		- Had to spend some serious time thinking about how to keep track of the location of the spider. 
 		- Make sure that up and down funtions perform correctly
 		-> Integrate with rest of timing routine. 
-		- Finally, check out why fans don't work.
+√		- Finally, check out why fans don't work.
 
 
 

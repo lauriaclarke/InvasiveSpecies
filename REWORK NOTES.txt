@@ -1,9 +1,18 @@
 REWORK NOTES
 
+
+BOARD 01
+
+
 BOARD 02
 	- mcp0 -> 14, 15
+	- mcp1 -> 8
 
 
+
+
+ALL BOARDS
+	- AUX header for LEDs 
 
 --------------------
 
@@ -15,3 +24,6 @@ REWORK NOTES
 - Connect Pins 0 and 2 for PIR interrupt
 
 - BOARD 0 mcp1 pins 13, 15 on board 0
+
+
+

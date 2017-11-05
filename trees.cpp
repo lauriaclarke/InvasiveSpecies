@@ -13,8 +13,11 @@ Tree::Tree()
 	this->nCocoons = 12;
 	this->nSpiders = 2;
 
-	this->chirp = 5;
-	this->drone = 4;
+	this->chirpPin = 5;
+	this->dronePin = 6;
+	this->chirpState = HIGH;
+	this->droneState = HIGH;
+	this->T2 = 0;
 }
 
 
@@ -31,6 +34,11 @@ void Tree::setupTree(const int cocoonValues[12][4], const int spiderValues[1][4]
 	{
 		Serial.println("ERROR: Spider setup");
 	}
+
+	pinMode(chirpPin, OUTPUT);
+	pinMode(dronePin, OUTPUT);
+	digitalWrite(chirpPin, chirpState);
+	digitalWrite(dronePin, droneState);
 }
 
 
@@ -86,7 +94,6 @@ int Tree::setupSpiders(const int spiderValues[2][4])
 		if(this->spiders[i].stepperState == LOW)
 		{
 			this->spiders[i].raiseSpider(SPIDER_STEPS, 40);
-			this->spiders[i].stepperState = HIGH;
 		}
 	}
 
@@ -97,26 +104,85 @@ int Tree::setupSpiders(const int spiderValues[2][4])
 
 //-------------------------------------------------------------------
 
+void Tree::chirp(long interval)
+{
+	long onInterval = interval;
+	long offInterval = 200L;
 
-// void Tree::makeNoise(int noise, int interval)
-// {
-//   unsigned long T1 = millis();
- 
-//   if(T1 - T2 >= onInterval)
-//   {
-//   	ledState = HIGH;
-//     T2 = T1; 
-//     digitalWrite(ledPin, ledState);
-//   }
-//   if((ledState == HIGH) && (T1 - T2 >= offInterval)) 
-//   {
-//   	ledState = LOW;
-//     T2 = T1; 
-//     digitalWrite(ledPin, ledState);
-//   }
-// }
+	unsigned long T1 = millis();
+
+	if((chirpState == LOW) && (T1 - T2 >= offInterval)) 
+	{
+		Serial.println("HEY!");
+		chirpState = HIGH;
+		T2 = T1; 
+		digitalWrite(chirpPin, chirpState);
+	}
+	if((chirpState == HIGH) && (T1 - T2 >= onInterval)) 
+	{
+		Serial.println("Hi!");
+		chirpState = LOW;
+		T2 = T1; 
+		digitalWrite(chirpPin, chirpState);
+	}
+}
+
+void Tree::drone(long interval)
+{
+	long onInterval = interval;
+	long offInterval = 200L;
+
+	unsigned long T1 = millis();
+
+	if((droneState == LOW) && (T1 - T2 >= offInterval)) 
+	{
+		onInterval = onInterval - 100;
+		Serial.println("HEY!");
+		droneState = HIGH;
+		T2 = T1; 
+		digitalWrite(dronePin, droneState);
+	}
+	if((chirpState == HIGH) && (T1 - T2 >= onInterval)) 
+	{
+		Serial.println("Hi!");
+		droneState = LOW;
+		T2 = T1; 
+		digitalWrite(dronePin, droneState);
+	}
+}
 
 
+void Tree::resetAllCocoons()
+{
+    this->cocoons[0].resetCocoonValues();
+    this->cocoons[1].resetCocoonValues();
+    this->cocoons[2].resetCocoonValues();
+    this->cocoons[3].resetCocoonValues();
+    this->cocoons[4].resetCocoonValues();
+    this->cocoons[5].resetCocoonValues();
+    this->cocoons[6].resetCocoonValues();
+    this->cocoons[7].resetCocoonValues();
+    this->cocoons[8].resetCocoonValues();
+    this->cocoons[9].resetCocoonValues();
+    this->cocoons[10].resetCocoonValues();
+    this->cocoons[11].resetCocoonValues();
+}
+
+void Tree::cocoonsOff()
+{
+    this->cocoons[0].turnOff();
+    this->cocoons[1].turnOff();
+    this->cocoons[2].turnOff();
+    this->cocoons[3].turnOff();
+    this->cocoons[4].turnOff();
+    this->cocoons[5].turnOff();
+    this->cocoons[6].turnOff();
+    this->cocoons[7].turnOff();
+    this->cocoons[8].turnOff();
+    this->cocoons[9].turnOff();
+    this->cocoons[10].turnOff();
+    this->cocoons[11].turnOff();
+}
 
 void Tree::breatheAll()
 {
@@ -150,12 +216,21 @@ void Tree::breatheFasterAll()
     this->cocoons[11].breatheFaster(1);
 }
 
+void Tree::testCocoonsAll()
+{
+	for(int i = 0; i < nCocoons; i++)
+	{
+		this->cocoons[i].setCocoonTestValues();
+	}
 
+	breatheAll();
+}
 
 void Tree::testCocoons()
 {
 	for(int i = 0; i < nCocoons; i++)
 	{
+		this->cocoons[i].setCocoonTestValues();
 		// Test Fans
 		this->cocoons[i].breathIn();
 		delay(100);
