@@ -8,9 +8,11 @@
 #ifndef SRC_COCOONS_H_
 #define SRC_COCOONS_H_
 
+#include "Arduino.h"
 #include <Wire.h>
 #include "Adafruit_MCP23017.h"
 #include "Tlc5940.h"
+// #include "patternTimes.h"
 
 #define FAST_THRESHOLD	50
 #define SCALE 			50
@@ -28,6 +30,7 @@ public:
 	long inhaleTime;
 	long exhaleTime;
 	long waitTime;
+	long waitTimeF;
 
 	unsigned long T2;
 
@@ -35,14 +38,14 @@ public:
 
 	Adafruit_MCP23017* mcp;
 
-
 	Cocoon();
 	
-	void setCocoonValues(Adafruit_MCP23017* mcp, int inPin, int outPin, int ledPin, long inhaleTime, long exhaleTime, long waitTime);
+	void setCocoonValues(Adafruit_MCP23017* mcp, int inPin, int outPin, int ledPin); //, long inhaleTime, long exhaleTime, long waitTime, long waitTimeF);
+	void printValues();
+	int  breatheR(long wT, long iT, long eT);
 	void breathe();
 	void breatheNoFade();
-	void breatheFaster();
-	void breatheFasterP();
+	// void breatheFaster(); //long wT, long wTF, long iT, long eT);
 	void LEDOff();
 	void LEDOn();
 	void breathIn(); 

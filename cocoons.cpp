@@ -9,14 +9,16 @@
 
 Cocoon::Cocoon(){}
 
-void Cocoon::setCocoonValues(Adafruit_MCP23017* mcp, int inPin, int outPin, int ledPin, long inhaleTime, long exhaleTime, long waitTime)
+void Cocoon::setCocoonValues(Adafruit_MCP23017* mcp, int inPin, int outPin, int ledPin) //, long inhaleTime, long exhaleTime, long waitTime, long waitTimeF)
 {
 	this->inPin = inPin;
 	this->outPin = outPin;
 	this->ledPin = ledPin;
-	this->inhaleTime = inhaleTime;
-	this->exhaleTime = exhaleTime;
-	this->waitTime = waitTime;
+
+	this->inhaleTime = 1000; //random(500, 1000); 		//inhaleTime;
+	this->exhaleTime = 1000; //random(500, 1000); 		//exhaleTime;
+	this->waitTime   = 1000; //random(12000, 20000); 	// waitTime;
+	this->waitTimeF  = 1000; //random(10, 500);			// waitTimeF;
 
 	this->mcp = mcp;
 	this->T2 = 0;
@@ -24,37 +26,6 @@ void Cocoon::setCocoonValues(Adafruit_MCP23017* mcp, int inPin, int outPin, int 
 	this->ledMax = 4095;
 	this->ledMin = 100;
 }
-
-
-void Cocoon::breatheNoFade() 
-{
-	unsigned long T1 = millis();
-
-	if((state == 0) && (T1 - T2 >= waitTime)) 
-	{
-		state = 1; 
-		T2 = T1; 
-		mcp->digitalWrite(inPin, HIGH);
-		Tlc.set(ledPin, HIGH);
-	}
-	else if ((this->state == 1) && (T1 - T2 >= inhaleTime)) 
-	{
-		state = 2; 
-		T2 = T1; 
-		mcp->digitalWrite(inPin, LOW);
-		mcp->digitalWrite(outPin, HIGH);
-	} 
-	else if ((this->state == 2) && (T1 - T2 >= exhaleTime)) 
-	{
-		state = 0; 
-		T2 = T1; 
-		mcp->digitalWrite(outPin, LOW);
-		Tlc.set(ledPin, LOW);
-	} 
-
-	Tlc.update();
-}
-
 
 
 void Cocoon::breathe() 
@@ -86,24 +57,77 @@ void Cocoon::breathe()
 	tlc_updateFades();
 }
 
-void Cocoon::breatheFasterP() 
-{	
-	static int count;
+
+
+
+int Cocoon::breatheR(long wT, long iT, long eT) 
+{
+	static int count = 0;
 	unsigned long T1 = millis();
 
-	long tt1 = waitTime;
-	long tt2 = inhaleTime;
-	long tt3 = exhaleTime;
+	if((state == 0) && (T1 - T2 >= wT)) 
+	{
+		state = 1; 
+		T2 = T1; 
+		mcp->digitalWrite(inPin, HIGH);
+		tlc_addFade(ledPin, ledMin, ledMax, millis(), millis() + iT);
+	}
+	else if ((state == 1) && (T1 - T2 >= iT)) 
+	{
+		state = 2; 
+		T2 = T1; 
+		mcp->digitalWrite(inPin, LOW);
+		mcp->digitalWrite(outPin, HIGH);
+		tlc_addFade(ledPin, ledMax, ledMin, millis(), millis() + eT);
+	} 
+	else if ((state == 2) && (T1 - T2 >= eT)) 
+	{
+		state = 0; 
+		T2 = T1; 
+		mcp->digitalWrite(outPin, LOW);
 
-	if(tt1 > 1000)
+		if(count < FAST_THRESHOLD)
+		{
+			count++;
+		}
+		else
+		{
+			count = 0;
+		}
+	} 
+
+	tlc_updateFades();
+
+	return count;
+}
+
+
+/*
+void Cocoon::breatheFaster() //long wT, long wTF, long iT, long eT) 
+{	
+	int count;
+	unsigned long tt1 = waitTime;
+	unsigned long tt2 = inhaleTime;
+	unsigned long tt3 = exhaleTime;
+	unsigned long period = tt1 + tt2 + tt3;
+	unsigned long steps = AWAKETIME / period;
+ 	unsigned long scale = (waitTime - waitTimeF) / steps;
+
+ 	// Serial.print(steps);
+ 	// Serial.print(", ");
+ 	// Serial.println(scale);
+
+	count = breatheR(tt1, tt2, tt3);
+
+	if((count < steps) && (tt1 > waitTimeF))
 	{
 		// Serial.println(tt1);
-		tt1 = waitTime - SCALE * count;
+		tt1 = waitTime - scale * count;
 
 		if(tt2 < 2000)
 		{
-			tt2 = inhaleTime + SCALE * count;
-			tt3 = exhaleTime + SCALE * count;
+			tt2 = inhaleTime + scale * count;
+			tt3 = exhaleTime + scale * count;
 		}
 		else
 		{
@@ -113,117 +137,22 @@ void Cocoon::breatheFasterP()
 	}
 	else
 	{
-		tt1 = 1000;
+		tt1 = waitTimeF;
 	}
 
-	if((state == 0) && (T1 - T2 >= tt1)) 
-	{
-		state = 1; 
-		T2 = T1; 
-		mcp->digitalWrite(inPin, HIGH);
-		tlc_addFade(ledPin, ledMin, ledMax, millis(), millis() + tt2);
-	}
-	else if ((this->state == 1) && (T1 - T2 >= tt2)) 
-	{
-		state = 2; 
-		T2 = T1; 
-		mcp->digitalWrite(inPin, LOW);
-		mcp->digitalWrite(outPin, HIGH);
-		tlc_addFade(ledPin, ledMax, ledMin, millis(), millis() + tt3);
-	} 
-	else if ((this->state == 2) && (T1 - T2 >= tt3)) 
-	{
-		state = 0; 
-		T2 = T1; 
-		mcp->digitalWrite(outPin, LOW);
-		
-		if(count < FAST_THRESHOLD)
-		{
-			count++;
-			Serial.print(tt1);
-			Serial.print(", ");
-			Serial.print(tt2);
-			Serial.print(", ");
-			Serial.println(tt3);
+	// Serial.print(tt1);
+ //    Serial.print(", ");
+	// Serial.print(tt2);
+	// Serial.print(", ");
+	// Serial.println(tt3);
 
-			Serial.println(count);
-		}
-		else
-		{
-			count = 0;
-		}
-	} 
-
-	tlc_updateFades();
+	// Serial.println(count);
 }
 
-void Cocoon::breatheFaster() 
-{	
-	static int count;
-	unsigned long T1 = millis();
-
-	long tt1 = waitTime;
-	long tt2 = inhaleTime;
-	long tt3 = exhaleTime;
-
-	if(tt1 > 1000)
-	{
-		tt1 = waitTime - SCALE * count;
-
-		if(tt2 < 2000)
-		{
-			tt2 = inhaleTime + SCALE * count;
-			tt3 = exhaleTime + SCALE * count;
-		}
-		else
-		{
-			tt2 = 2000;
-			tt3 = 1000;
-		}
-	}
-	else
-	{
-		tt1 = 1000;
-	}
-
-
-	// Serial.println(tt1);
-
-	if((state == 0) && (T1 - T2 >= tt1)) 
-	{
-		state = 1; 
-		T2 = T1; 
-		mcp->digitalWrite(inPin, HIGH);
-		tlc_addFade(ledPin, ledMin, ledMax, millis(), millis() + tt2);
-	}
-	else if ((this->state == 1) && (T1 - T2 >= tt2)) 
-	{
-		state = 2; 
-		T2 = T1; 
-		mcp->digitalWrite(inPin, LOW);
-		mcp->digitalWrite(outPin, HIGH);
-		tlc_addFade(ledPin, ledMax, ledMin, millis(), millis() + tt3);
-	} 
-	else if ((this->state == 2) && (T1 - T2 >= tt3)) 
-	{
-		state = 0; 
-		T2 = T1; 
-		mcp->digitalWrite(outPin, LOW);
-		
-		if(count < FAST_THRESHOLD)
-		{
-			count++;
-		}
-		else
-		{
-			count = 0;
-		}
-	} 
-
-	tlc_updateFades();
-}
+*/
 
 // ------------------------------------------------------
+
 
 void Cocoon::breathIn()
 {
