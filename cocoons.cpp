@@ -9,7 +9,7 @@
 
 Cocoon::Cocoon(){}
 
-void Cocoon::setCocoonValues(Adafruit_MCP23017* mcp, int inPin, int outPin, int ledPin, long inhaleTime, long exhaleTime, long waitTime, long waitTimeF)
+void Cocoon::setCocoonValues(Adafruit_MCP23017* mcp, int inPin, int outPin, int ledPin, long inhaleTime, long exhaleTime, long waitTime)
 {
 	this->inPin = inPin;
 	this->outPin = outPin;
@@ -56,6 +56,7 @@ void Cocoon::breatheNoFade()
 }
 
 
+
 void Cocoon::breathe() 
 {
 	unsigned long T1 = millis();
@@ -90,23 +91,19 @@ void Cocoon::breatheFasterP()
 	static int count;
 	unsigned long T1 = millis();
 
-	long long period = waitTime + inhaleTime + exhaleTime;
 	long tt1 = waitTime;
 	long tt2 = inhaleTime;
 	long tt3 = exhaleTime;
-	long steps = AWAKETIME / period;
-
-	long scale = (waitTime - waitTimeF) / steps;
 
 	if(tt1 > 1000)
 	{
 		// Serial.println(tt1);
-		tt1 = waitTime - scale * count;
+		tt1 = waitTime - SCALE * count;
 
 		if(tt2 < 2000)
 		{
-			tt2 = inhaleTime + scale * count;
-			tt3 = exhaleTime + scale * count;
+			tt2 = inhaleTime + SCALE * count;
+			tt3 = exhaleTime + SCALE * count;
 		}
 		else
 		{
@@ -150,7 +147,6 @@ void Cocoon::breatheFasterP()
 			Serial.println(tt3);
 
 			Serial.println(count);
-			Serial.println(scale);
 		}
 		else
 		{
@@ -166,22 +162,18 @@ void Cocoon::breatheFaster()
 	static int count;
 	unsigned long T1 = millis();
 
-	long long period = waitTime + inhaleTime + exhaleTime;
 	long tt1 = waitTime;
 	long tt2 = inhaleTime;
 	long tt3 = exhaleTime;
-	long steps = AWAKETIME / period;
-
-	long scale = (waitTime - waitTimeF) / steps;
 
 	if(tt1 > 1000)
 	{
-		tt1 = waitTime - scale * count;
+		tt1 = waitTime - SCALE * count;
 
 		if(tt2 < 2000)
 		{
-			tt2 = inhaleTime + scale * count;
-			tt3 = exhaleTime + scale * count;
+			tt2 = inhaleTime + SCALE * count;
+			tt3 = exhaleTime + SCALE * count;
 		}
 		else
 		{
@@ -193,6 +185,9 @@ void Cocoon::breatheFaster()
 	{
 		tt1 = 1000;
 	}
+
+
+	// Serial.println(tt1);
 
 	if((state == 0) && (T1 - T2 >= tt1)) 
 	{

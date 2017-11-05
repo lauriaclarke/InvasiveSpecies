@@ -19,7 +19,7 @@ Tree::Tree()
 
 
 
-void Tree::setupTree(const unsigned int cocoonValues[12][8], const unsigned int spiderValues[1][4])
+void Tree::setupTree(const unsigned int cocoonValues[12][7], const unsigned int spiderValues[1][4])
 {
 
 	if(!this->setupCocoons(cocoonValues))
@@ -35,12 +35,12 @@ void Tree::setupTree(const unsigned int cocoonValues[12][8], const unsigned int 
 
 
 // Setup values and pinmode for cocoons
-int Tree::setupCocoons(const unsigned int cocoonValues[12][8])
+int Tree::setupCocoons(const unsigned int cocoonValues[12][7])
 {
 	// Set values and for cocoons
 	for(int i = 0; i < nCocoons; i++)
 	{
-		this->cocoons[i].setCocoonValues((Adafruit_MCP23017*)cocoonValues[i][0], cocoonValues[i][1], cocoonValues[i][2], cocoonValues[i][3], cocoonValues[i][4], cocoonValues[i][5], cocoonValues[i][6], cocoonValues[i][7]);	
+		this->cocoons[i].setCocoonValues((Adafruit_MCP23017*)cocoonValues[i][0], cocoonValues[i][1], cocoonValues[i][2], cocoonValues[i][3], cocoonValues[i][4], cocoonValues[i][5], cocoonValues[i][6]);	
 	}	
 
 	// Set pinmode for cocoons

@@ -23,7 +23,7 @@
 #define N_COCOONCS		1
 #define SPIDER_STEPS    800
 #define STEPS_PER_REV   200
-#define AWAKETIME      	120000UL
+#define AWAKETIME       120000UL
 
 class Tree
 {
@@ -40,8 +40,8 @@ public:
 
 	void breatheAll();
 	void breatheFasterAll();
-	void setupTree(const unsigned int cocoonValues[12][8], const unsigned int spiderValues[1][4]); 
-	int setupCocoons(const unsigned int  cocoonValues[12][8]); 
+	void setupTree(const unsigned int cocoonValues[12][7], const unsigned int spiderValues[1][4]); 
+	int setupCocoons(const unsigned int  cocoonValues[12][7]); 
 	int setupSpiders(const unsigned int spiderValues[1][4]);
 
 	int runSpider(int sound);
