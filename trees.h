@@ -19,11 +19,13 @@
 #include "Adafruit_MCP23017.h"
 #include "Tlc5940.h"
 #include <MCPStepper.h>
+#include "patternTimes.h"
 
 #define N_COCOONCS		1
 #define SPIDER_STEPS    800
 #define STEPS_PER_REV   200
 #define AWAKETIME       120000UL
+
 
 class Tree
 {
@@ -40,17 +42,16 @@ public:
 
 	void breatheAll();
 	void breatheFasterAll();
-	void setupTree(const unsigned int cocoonValues[12][7], const unsigned int spiderValues[1][4]); 
-	int setupCocoons(const unsigned int  cocoonValues[12][7]); 
-	int setupSpiders(const unsigned int spiderValues[1][4]);
+	void setupTree(const int cocoonValues[12][4], const int spiderValues[1][4]); 
+	int  setupCocoons(const int  cocoonValues[12][4]); //, const unsigned long cocoonTimes[12][4]); 
+	int  setupSpiders(const int spiderValues[1][4]);
 
-	int runSpider(int sound);
-	int runCocoons();
+	int  runSpider(int sound);
+	int  runCocoons();
 
 	void testCocoons();
 	void testSpiders();
 };
-
 
 
 #endif /* SRC_TREES_H_ */
