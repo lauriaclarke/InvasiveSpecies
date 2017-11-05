@@ -13,13 +13,14 @@
 #ifndef SRC_TREES_H_
 #define SRC_TREES_H_
 
+#include "Arduino.h"
 #include "cocoons.h";
 #include "spiders.h"
 #include <Wire.h>
 #include "Adafruit_MCP23017.h"
 #include "Tlc5940.h"
 #include <MCPStepper.h>
-#include "patternTimes.h"
+// #include "patternTimes.h"
 
 #define N_COCOONCS		1
 #define SPIDER_STEPS    800
