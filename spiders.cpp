@@ -36,7 +36,7 @@ void Spider::lowerSpider(int distance, int speed)
 }
 
 
-void Spider::turnSpiderOff(int interval)
+void Spider::turnSpiderOff(long interval)
 {
 	unsigned long T1 = millis();
 
@@ -49,7 +49,7 @@ void Spider::turnSpiderOff(int interval)
 }
 
 
-void Spider::blinkLED(int onInterval, int offInterval)
+void Spider::blinkLED(long onInterval, long offInterval)
 {
 	unsigned long T1 = millis();
 
@@ -68,7 +68,7 @@ void Spider::blinkLED(int onInterval, int offInterval)
 }
 
 
-void Spider::spinFans(int onInterval, int offInterval)
+void Spider::spinFans(long onInterval, long offInterval)
 {
 	unsigned long T1 = millis();
 

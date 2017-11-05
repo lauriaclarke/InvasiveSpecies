@@ -1,0 +1,17 @@
+REWORK NOTES
+
+BOARD 02
+	- mcp0 -> 14, 15
+
+
+
+--------------------
+
+REWORK NOTES
+
+- TLC output 2 is dead on board 01
+
+- Boards 01-02 need ULN rework
+- Connect Pins 0 and 2 for PIR interrupt
+
+- BOARD 0 mcp1 pins 13, 15 on board 0

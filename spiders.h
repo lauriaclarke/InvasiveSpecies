@@ -34,9 +34,9 @@ public:
 	void raiseSpider(int distance, int speed);
 	void lowerSpider(int distance, int speed);
 	// void animateSpider(int duration, int interval);
-	void spinFans(int onInterval, int offInterval);
-	void blinkLED(int onInterval, int offInterval);
-	void turnSpiderOff(int interval);
+	void spinFans(long onInterval, long offInterval);
+	void blinkLED(long onInterval, long offInterval);
+	void turnSpiderOff(long interval);
 
 };
 

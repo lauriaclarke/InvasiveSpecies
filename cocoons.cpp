@@ -7,10 +7,9 @@
 #include "tlc_fades.h"
 
 
-
 Cocoon::Cocoon(){}
 
-void Cocoon::setCocoonValues(Adafruit_MCP23017* mcp, int inPin, int outPin, int ledPin, long inhaleTime, long exhaleTime, long waitTime)
+void Cocoon::setCocoonValues(Adafruit_MCP23017* mcp, int inPin, int outPin, int ledPin, long inhaleTime, long exhaleTime, long waitTime, long waitTimeF)
 {
 	this->inPin = inPin;
 	this->outPin = outPin;
@@ -57,7 +56,6 @@ void Cocoon::breatheNoFade()
 }
 
 
-
 void Cocoon::breathe() 
 {
 	unsigned long T1 = millis();
@@ -87,18 +85,114 @@ void Cocoon::breathe()
 	tlc_updateFades();
 }
 
+void Cocoon::breatheFasterP() 
+{	
+	static int count;
+	unsigned long T1 = millis();
+
+	long long period = waitTime + inhaleTime + exhaleTime;
+	long tt1 = waitTime;
+	long tt2 = inhaleTime;
+	long tt3 = exhaleTime;
+	long steps = AWAKETIME / period;
+
+	long scale = (waitTime - waitTimeF) / steps;
+
+	if(tt1 > 1000)
+	{
+		// Serial.println(tt1);
+		tt1 = waitTime - scale * count;
+
+		if(tt2 < 2000)
+		{
+			tt2 = inhaleTime + scale * count;
+			tt3 = exhaleTime + scale * count;
+		}
+		else
+		{
+			tt2 = 2000;
+			tt3 = 1000;
+		}
+	}
+	else
+	{
+		tt1 = 1000;
+	}
+
+	if((state == 0) && (T1 - T2 >= tt1)) 
+	{
+		state = 1; 
+		T2 = T1; 
+		mcp->digitalWrite(inPin, HIGH);
+		tlc_addFade(ledPin, ledMin, ledMax, millis(), millis() + tt2);
+	}
+	else if ((this->state == 1) && (T1 - T2 >= tt2)) 
+	{
+		state = 2; 
+		T2 = T1; 
+		mcp->digitalWrite(inPin, LOW);
+		mcp->digitalWrite(outPin, HIGH);
+		tlc_addFade(ledPin, ledMax, ledMin, millis(), millis() + tt3);
+	} 
+	else if ((this->state == 2) && (T1 - T2 >= tt3)) 
+	{
+		state = 0; 
+		T2 = T1; 
+		mcp->digitalWrite(outPin, LOW);
+		
+		if(count < FAST_THRESHOLD)
+		{
+			count++;
+			Serial.print(tt1);
+			Serial.print(", ");
+			Serial.print(tt2);
+			Serial.print(", ");
+			Serial.println(tt3);
+
+			Serial.println(count);
+			Serial.println(scale);
+		}
+		else
+		{
+			count = 0;
+		}
+	} 
+
+	tlc_updateFades();
+}
 
 void Cocoon::breatheFaster() 
 {	
 	static int count;
 	unsigned long T1 = millis();
 
-	int tt1, tt2, tt3;
-	tt1 = waitTime - 10 * count;
-	tt2 = inhaleTime - 10 * count;
-	tt3 = exhaleTime - 10 * count;
+	long long period = waitTime + inhaleTime + exhaleTime;
+	long tt1 = waitTime;
+	long tt2 = inhaleTime;
+	long tt3 = exhaleTime;
+	long steps = AWAKETIME / period;
 
-	Serial.println(tt1);
+	long scale = (waitTime - waitTimeF) / steps;
+
+	if(tt1 > 1000)
+	{
+		tt1 = waitTime - scale * count;
+
+		if(tt2 < 2000)
+		{
+			tt2 = inhaleTime + scale * count;
+			tt3 = exhaleTime + scale * count;
+		}
+		else
+		{
+			tt2 = 2000;
+			tt3 = 1000;
+		}
+	}
+	else
+	{
+		tt1 = 1000;
+	}
 
 	if((state == 0) && (T1 - T2 >= tt1)) 
 	{

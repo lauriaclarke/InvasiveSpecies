@@ -19,7 +19,7 @@ Tree::Tree()
 
 
 
-void Tree::setupTree(int cocoonValues[12][7], int spiderValues[1][4])
+void Tree::setupTree(const unsigned int cocoonValues[12][8], const unsigned int spiderValues[1][4])
 {
 
 	if(!this->setupCocoons(cocoonValues))
@@ -35,12 +35,12 @@ void Tree::setupTree(int cocoonValues[12][7], int spiderValues[1][4])
 
 
 // Setup values and pinmode for cocoons
-int Tree::setupCocoons(int cocoonValues[12][7])
+int Tree::setupCocoons(const unsigned int cocoonValues[12][8])
 {
 	// Set values and for cocoons
 	for(int i = 0; i < nCocoons; i++)
 	{
-		this->cocoons[i].setCocoonValues((Adafruit_MCP23017*)cocoonValues[i][0], cocoonValues[i][1], cocoonValues[i][2], cocoonValues[i][3], cocoonValues[i][4], cocoonValues[i][5], cocoonValues[i][6]);	
+		this->cocoons[i].setCocoonValues((Adafruit_MCP23017*)cocoonValues[i][0], cocoonValues[i][1], cocoonValues[i][2], cocoonValues[i][3], cocoonValues[i][4], cocoonValues[i][5], cocoonValues[i][6], cocoonValues[i][7]);	
 	}	
 
 	// Set pinmode for cocoons
@@ -59,7 +59,7 @@ int Tree::setupCocoons(int cocoonValues[12][7])
 }
 
 // Setup values and pinmodes for spiders
-int Tree::setupSpiders(int spiderValues[1][4])
+int Tree::setupSpiders(const unsigned int spiderValues[1][4])
 {
 	// Set values and for spiders
 	for(int i = 0; i < nSpiders; i++)
@@ -144,7 +144,7 @@ void Tree::breatheFasterAll()
     this->cocoons[7].breatheFaster();
     this->cocoons[8].breatheFaster();
     this->cocoons[9].breatheFaster();
-    this->cocoons[10].breatheFaster();
+    this->cocoons[10].breatheFasterP();
     this->cocoons[11].breatheFaster();
 }
 
@@ -156,7 +156,7 @@ void Tree::testCocoons()
 	{
 		// Test Fans
 		this->cocoons[i].breathIn();
-		delay(3000);
+		delay(100);
 		this->cocoons[i].breathOut();
 
 		// Test LED
