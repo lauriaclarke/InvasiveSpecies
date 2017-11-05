@@ -6,6 +6,7 @@
 #include "Tlc5940.h"
 #include "tlc_fades.h"
 
+int count;
 
 Cocoon::Cocoon(){}
 
@@ -14,12 +15,22 @@ void Cocoon::setCocoonValues(Adafruit_MCP23017* mcp, int inPin, int outPin, int 
 	this->inPin = inPin;
 	this->outPin = outPin;
 	this->ledPin = ledPin;
+	this->inhaleTime = (int)random(500, 1000); 		//inhaleTime;
+	this->exhaleTime = (int)random(500, 1000); 		//exhaleTime;
+	this->waitTime   = 10000L + random(1000, 30000); 	// waitTime;
+	this->waitTimeF  = (int)random(5, 200);			// waitTimeF;
 
-	this->inhaleTime = 1000; //random(500, 1000); 		//inhaleTime;
-	this->exhaleTime = 1000; //random(500, 1000); 		//exhaleTime;
-	this->waitTime   = 1000; //random(12000, 20000); 	// waitTime;
-	this->waitTimeF  = 1000; //random(10, 500);			// waitTimeF;
 
+	Serial.print(this->inhaleTime);
+	Serial.print(", ");
+	Serial.print(this->exhaleTime);
+	Serial.print(", ");
+	Serial.print(this->waitTime);
+	Serial.print(", ");
+	Serial.println(this->waitTimeF);
+
+
+	this->count = 0;
 	this->mcp = mcp;
 	this->T2 = 0;
 	this->state = 0;
@@ -32,23 +43,29 @@ void Cocoon::breathe()
 {
 	unsigned long T1 = millis();
 
-	if((state == 0) && (T1 - T2 >= waitTime)) 
-	{
+	if((state == 0) && (T1 - T2 >= (unsigned long)waitTime)) 
+	{		
+		// Serial.println("S0->S1");
+		// Serial.println(T1);
 		state = 1; 
 		T2 = T1; 
 		mcp->digitalWrite(inPin, HIGH);
-		tlc_addFade(ledPin, ledMin, ledMax, millis(), millis() + inhaleTime);
+		tlc_addFade(ledPin, ledMin, ledMax, millis(), millis() + (unsigned long)inhaleTime);
 	}
-	else if ((this->state == 1) && (T1 - T2 >= inhaleTime)) 
+	else if ((this->state == 1) && (T1 - T2 >= (unsigned long)inhaleTime)) 
 	{
+		// Serial.println("S1->S2");
+		// Serial.println(T1);
 		state = 2; 
 		T2 = T1; 
 		mcp->digitalWrite(inPin, LOW);
 		mcp->digitalWrite(outPin, HIGH);
-		tlc_addFade(ledPin, ledMax, ledMin, millis(), millis() + exhaleTime);
+		tlc_addFade(ledPin, ledMax, ledMin, millis(), millis() + (unsigned long)exhaleTime);
 	} 
-	else if ((this->state == 2) && (T1 - T2 >= exhaleTime)) 
+	else if ((this->state == 2) && (T1 - T2 >= (unsigned long)exhaleTime)) 
 	{
+		// Serial.println("S2->S0");
+		// Serial.println(T1);
 		state = 0; 
 		T2 = T1; 
 		mcp->digitalWrite(outPin, LOW);
@@ -59,14 +76,15 @@ void Cocoon::breathe()
 
 
 
-
-int Cocoon::breatheR(long wT, long iT, long eT) 
+/*
+int Cocoon::breatheR(unsigned long wT, unsigned long iT, unsigned long eT) 
 {
-	static int count = 0;
+	// static int count; // = 0;
 	unsigned long T1 = millis();
 
 	if((state == 0) && (T1 - T2 >= wT)) 
 	{
+		Serial.println("S0->S1");
 		state = 1; 
 		T2 = T1; 
 		mcp->digitalWrite(inPin, HIGH);
@@ -74,6 +92,7 @@ int Cocoon::breatheR(long wT, long iT, long eT)
 	}
 	else if ((state == 1) && (T1 - T2 >= iT)) 
 	{
+		Serial.println("S1->S2");
 		state = 2; 
 		T2 = T1; 
 		mcp->digitalWrite(inPin, LOW);
@@ -82,12 +101,11 @@ int Cocoon::breatheR(long wT, long iT, long eT)
 	} 
 	else if ((state == 2) && (T1 - T2 >= eT)) 
 	{
+		Serial.println("S2->S0");
 		state = 0; 
 		T2 = T1; 
 		mcp->digitalWrite(outPin, LOW);
 
-		if(count < FAST_THRESHOLD)
-		{
 			count++;
 		}
 		else
@@ -100,56 +118,130 @@ int Cocoon::breatheR(long wT, long iT, long eT)
 
 	return count;
 }
+*/
 
 
-/*
-void Cocoon::breatheFaster() //long wT, long wTF, long iT, long eT) 
+
+void Cocoon::breatheFaster(int P) //long wT, long wTF, long iT, long eT) 
 {	
-	int count;
+	// static int count = 0;
+	unsigned long T1 = millis();
 	unsigned long tt1 = waitTime;
-	unsigned long tt2 = inhaleTime;
-	unsigned long tt3 = exhaleTime;
+	unsigned long tt2 = (unsigned long)inhaleTime;
+	unsigned long tt3 = (unsigned long)exhaleTime;
 	unsigned long period = tt1 + tt2 + tt3;
-	unsigned long steps = AWAKETIME / period;
- 	unsigned long scale = (waitTime - waitTimeF) / steps;
+	unsigned long steps = (unsigned long)AWAKETIME / period;
+ 	unsigned long scale = (waitTime - (long)waitTimeF) / steps;
 
- 	// Serial.print(steps);
- 	// Serial.print(", ");
- 	// Serial.println(scale);
+//---------------------------------------------------
 
-	count = breatheR(tt1, tt2, tt3);
+	// if(count < steps)
+	// {
+	// 	tt1 = waitTime - scale * count;
 
-	if((count < steps) && (tt1 > waitTimeF))
+	// 	if(tt2 < 2000L)
+	// 	{
+	// 		tt2 = inhaleTime + 100L * count;
+	// 		tt3 = exhaleTime + 100L * count;
+	// 	}
+	// 	else
+	// 	{
+	// 		tt2 = 2000L;
+	// 		tt3 = 1000L;
+	// 	}
+	// }
+	// else
+	// {
+	// 	tt1 = waitTimeF;
+	// 	tt2 = 2000L;
+	// 	tt3 = 1000L;
+	// }
+
+//---------------------------------------------------
+ 	// If state == waiting and time exceeds wait, then inhale
+	if((state == 0) && (T1 - T2 >= tt1)) 
 	{
-		// Serial.println(tt1);
-		tt1 = waitTime - scale * count;
+		// Serial.println("S0->S1");
+		state = 1; 
+		T2 = T1; 
+
+		if(tt1 > waitTimeF)
+		{
+			tt1 = waitTime - scale * count;
+		}
+		else
+		{
+			tt1 = waitTimeF;
+		}
+
+		mcp->digitalWrite(inPin, HIGH);
+		tlc_addFade(ledPin, ledMin, ledMax, millis(), millis() + tt2);
+	}
+	// If state == inhale and time exceeds inhale, then exhale
+	else if ((state == 1) && (T1 - T2 >= tt2)) 
+	{
+		// Serial.println("S1->S2");
+		state = 2; 
+		T2 = T1; 
 
 		if(tt2 < 2000)
 		{
-			tt2 = inhaleTime + scale * count;
-			tt3 = exhaleTime + scale * count;
+			tt2 = inhaleTime + 100L * count;
 		}
 		else
 		{
 			tt2 = 2000;
-			tt3 = 1000;
 		}
-	}
-	else
+
+		mcp->digitalWrite(inPin, LOW);
+		mcp->digitalWrite(outPin, HIGH);
+		tlc_addFade(ledPin, ledMax, ledMin, millis(), millis() + tt3);
+	} 
+	// If state == exhale and time exceeds exhale, then wait
+	else if ((state == 2) && (T1 - T2 >= tt3)) 
 	{
-		tt1 = waitTimeF;
-	}
+		// Serial.println("S2->S0");
+		state = 0; 
+		T2 = T1; 
 
-	// Serial.print(tt1);
- //    Serial.print(", ");
-	// Serial.print(tt2);
-	// Serial.print(", ");
-	// Serial.println(tt3);
+		if(tt3 < 1000)
+		{
+			tt3 = exhaleTime + 100L * count;
+		}
+		else
+		{
+			tt3 = 1000L;
+		}
 
-	// Serial.println(count);
+		mcp->digitalWrite(outPin, LOW);
+
+		if(this->count < steps)
+		{
+			this->count = count + 1;
+			// Serial.println(count);
+		}
+	} 
+
+	tlc_updateFades();
 }
 
-*/
+	// if(P)
+ 	// 	{
+	 // 		Serial.println(AWAKETIME);
+	 // 		Serial.print("period - ");
+	 // 		Serial.print(period);
+	 // 		Serial.print("  steps - ");
+	 // 		Serial.print(steps);
+	 // 		Serial.print("  scale - ");
+	 // 		Serial.println(scale);
+		//     Serial.print("wait - ");
+		// 	Serial.print(tt1);
+		//     Serial.print("  inhale - ");
+		// 	Serial.print(tt2);
+		// 	Serial.print("  exhale - ");
+		// 	Serial.println(tt3);
+		// 	Serial.println(count);
+ 	// 	}
 
 // ------------------------------------------------------
 

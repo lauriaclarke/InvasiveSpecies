@@ -43,9 +43,9 @@ public:
 
 	void breatheAll();
 	void breatheFasterAll();
-	void setupTree(const int cocoonValues[12][4], const int spiderValues[1][4]); 
-	int  setupCocoons(const int  cocoonValues[12][4]); //, const unsigned long cocoonTimes[12][4]); 
-	int  setupSpiders(const int spiderValues[1][4]);
+	void setupTree(const int cocoonValues[12][4], const int spiderValues[2][4]); 
+	int  setupCocoons(const int  cocoonValues[12][4]);
+	int  setupSpiders(const int spiderValues[2][4]);
 
 	int  runSpider(int sound);
 	int  runCocoons();

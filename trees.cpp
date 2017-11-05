@@ -41,6 +41,7 @@ int Tree::setupCocoons(const int cocoonValues[12][4]) //, const unsigned long co
 	for(int i = 0; i < nCocoons; i++)
 	{
 		this->cocoons[i].setCocoonValues((Adafruit_MCP23017*)cocoonValues[i][0], cocoonValues[i][1], cocoonValues[i][2], cocoonValues[i][3]);	
+		// this->cocoons[i].printValues();
 	}	
 
 	// Set pinmode for cocoons
@@ -59,7 +60,7 @@ int Tree::setupCocoons(const int cocoonValues[12][4]) //, const unsigned long co
 }
 
 // Setup values and pinmodes for spiders
-int Tree::setupSpiders(const int spiderValues[1][4])
+int Tree::setupSpiders(const int spiderValues[2][4])
 {
 	// Set values and for spiders
 	for(int i = 0; i < nSpiders; i++)
@@ -89,6 +90,7 @@ int Tree::setupSpiders(const int spiderValues[1][4])
 		}
 	}
 
+	Serial.println("Spiders Initialized!");
 	return 1;
 }
 
@@ -132,21 +134,21 @@ void Tree::breatheAll()
     this->cocoons[11].breathe();
 }
 
-// void Tree::breatheFasterAll()
-// {
-//     this->cocoons[0].breatheFaster();
-//     this->cocoons[1].breatheFaster();
-//     this->cocoons[2].breatheFaster();
-//     this->cocoons[3].breatheFaster();
-//     this->cocoons[4].breatheFaster();
-//     this->cocoons[5].breatheFaster();
-//     this->cocoons[6].breatheFaster();
-//     this->cocoons[7].breatheFaster();
-//     this->cocoons[8].breatheFaster();
-//     this->cocoons[9].breatheFaster();
-//     this->cocoons[10].breatheFasterP();
-//     this->cocoons[11].breatheFaster();
-// }
+void Tree::breatheFasterAll()
+{
+    this->cocoons[0].breatheFaster(0);
+    this->cocoons[1].breatheFaster(0);
+    this->cocoons[2].breatheFaster(0);
+    this->cocoons[3].breatheFaster(0);
+    this->cocoons[4].breatheFaster(0);
+    this->cocoons[5].breatheFaster(0);
+    this->cocoons[6].breatheFaster(0);
+    this->cocoons[7].breatheFaster(0);
+    this->cocoons[8].breatheFaster(0);
+    this->cocoons[9].breatheFaster(0);
+    this->cocoons[10].breatheFaster(0);
+    this->cocoons[11].breatheFaster(1);
+}
 
 
 

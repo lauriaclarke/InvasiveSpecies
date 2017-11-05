@@ -40,5 +40,7 @@ public:
 
 };
 
+extern Stepper stepperA;
+extern Stepper stepperA;
 
 #endif /* SRC_SPIDERS_H_ */
