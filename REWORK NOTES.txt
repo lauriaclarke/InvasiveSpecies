@@ -1,14 +1,32 @@
 REWORK NOTES
 
+BOARD NULL
+√	- mcp0.6	-> Dead Darlington...just one output
 
-BOARD 01
+BOARD 00
+ 	SIDE A
+		- mcp0.3 	- C2.bottom		-> Dead Darlington
+		- mcp1.12	- C11.bottom	-> Dead Darlington
+		- mcp1.14	- C12.bottom	-> Dead Darlington
+	SIDE B
+		- ALL GOOD	
 
 
 BOARD 02
-	- mcp0 -> 14, 15
-	- mcp1 -> 8
+√	- mcp0.14	-> Seems like bad +12V header
+√	- mcp0.15   -> Seems like bad +12V header
+√	- mcp1.8	-> Seems like bad +12V header
+√	- mcp1.15  	-> Not sure.
 
 
+BOARD 01
+
+	SIDE B
+		- tlc.2 	- C4
+		- mcp0.11 	- C6.top
+		- mcp1.8-15 c
+	SIDE A
+		- 
 
 
 ALL BOARDS
