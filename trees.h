@@ -33,13 +33,13 @@ class Tree
 public:
 	Cocoon cocoons[12];
 	Spider spiders[2];
-	int nCocoons;
-	int nSpiders;
+	byte nCocoons;
+	byte nSpiders;
 
-	int chirpPin;
-	int dronePin;
-	int chirpState;
-	int droneState;
+	byte chirpPin;
+	byte dronePin;
+	byte chirpState;
+	byte droneState;
 	unsigned long T2;
 	Tree();
 
@@ -49,9 +49,9 @@ public:
 	void breatheFasterAll();
 	void resetAllCocoons();
 	void cocoonsOff();
-	void setupTree(const int cocoonValues[12][4], const int spiderValues[2][4]); 
-	int  setupCocoons(const int  cocoonValues[12][4]);
-	int  setupSpiders(const int spiderValues[2][4]);
+	void setupTree(const byte cocoonValues[12][4], const byte spiderValues[2][4]); 
+	int  setupCocoons(const byte  cocoonValues[12][4]);
+	int  setupSpiders(const byte spiderValues[2][4]);
 
 	int  runSpider(int sound);
 	int  runCocoons();

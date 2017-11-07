@@ -21,8 +21,7 @@ Tree::Tree()
 }
 
 
-
-void Tree::setupTree(const int cocoonValues[12][4], const int spiderValues[1][4])
+void Tree::setupTree(const byte cocoonValues[12][4], const byte spiderValues[1][4])
 {
 
 	if(!this->setupCocoons(cocoonValues))
@@ -43,12 +42,12 @@ void Tree::setupTree(const int cocoonValues[12][4], const int spiderValues[1][4]
 
 
 // Setup values and pinmode for cocoons
-int Tree::setupCocoons(const int cocoonValues[12][4]) //, const unsigned long cocoonTimes[12][4])
+int Tree::setupCocoons(const byte cocoonValues[12][4]) //, const unsigned long cocoonTimes[12][4])
 {
 	// Set values and for cocoons
 	for(int i = 0; i < nCocoons; i++)
 	{
-		this->cocoons[i].setCocoonValues((Adafruit_MCP23017*)cocoonValues[i][0], cocoonValues[i][1], cocoonValues[i][2], cocoonValues[i][3]);	
+		this->cocoons[i].setCocoonValues(cocoonValues[i][0], cocoonValues[i][1], cocoonValues[i][2], cocoonValues[i][3]);	
 		// this->cocoons[i].printValues();
 	}	
 
@@ -68,12 +67,12 @@ int Tree::setupCocoons(const int cocoonValues[12][4]) //, const unsigned long co
 }
 
 // Setup values and pinmodes for spiders
-int Tree::setupSpiders(const int spiderValues[2][4])
+int Tree::setupSpiders(const byte spiderValues[2][4])
 {
 	// Set values and for spiders
 	for(int i = 0; i < nSpiders; i++)
 	{
-		this->spiders[i].setSpiderValues((Stepper*)spiderValues[i][0], (Adafruit_MCP23017*)spiderValues[i][1], spiderValues[i][2], spiderValues[i][3]);
+		this->spiders[i].setSpiderValues(spiderValues[i][0], spiderValues[i][2], spiderValues[i][3]);
 	}	
 
 	// Set pinmode for spiders
@@ -100,7 +99,6 @@ int Tree::setupSpiders(const int spiderValues[2][4])
 	Serial.println("Spiders Initialized!");
 	return 1;
 }
-
 
 //-------------------------------------------------------------------
 
@@ -186,18 +184,18 @@ void Tree::cocoonsOff()
 
 void Tree::breatheAll()
 {
-    this->cocoons[0].breathe();
-    this->cocoons[1].breathe();
-    this->cocoons[2].breathe();
-    this->cocoons[3].breathe();
-    this->cocoons[4].breathe();
-    this->cocoons[5].breathe();
-    this->cocoons[6].breathe();
-    this->cocoons[7].breathe();
-    this->cocoons[8].breathe();
-    this->cocoons[9].breathe();
-    this->cocoons[10].breathe();
-    this->cocoons[11].breathe();
+    this->cocoons[0].breatheD(0);
+    this->cocoons[1].breatheD(0);
+    this->cocoons[2].breatheD(0);
+    this->cocoons[3].breatheD(0);
+    this->cocoons[4].breatheD(0);
+    this->cocoons[5].breatheD(0);
+    this->cocoons[6].breatheD(0);
+    this->cocoons[7].breatheD(0);
+    this->cocoons[8].breatheD(0);
+    this->cocoons[9].breatheD(0);
+    this->cocoons[10].breatheD(0);
+    this->cocoons[11].breatheD(1);
 }
 
 void Tree::breatheFasterAll()

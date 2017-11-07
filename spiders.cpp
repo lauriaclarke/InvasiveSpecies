@@ -5,10 +5,18 @@
 
 Spider::Spider(){}
 
-void Spider::setSpiderValues(Stepper* spiderStepper, Adafruit_MCP23017* mcp, int fanPin, int ledPin)
+void Spider::setSpiderValues(byte spiderStepper, byte fanPin, byte ledPin)
 {
-	this->spiderStepper = spiderStepper;
-	this->mcp = mcp;
+	if(spiderStepper == 0)
+	{
+		this->spiderStepper = &stepperA;
+	}
+	else if(spiderStepper == 1)
+	{
+		this->spiderStepper = &stepperB;
+	}
+
+	this->mcp = &mcp2;
 	this->fanPin = fanPin;
 	this->ledPin = ledPin;
 

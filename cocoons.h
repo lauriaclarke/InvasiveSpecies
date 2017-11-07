@@ -20,34 +20,36 @@
 class Cocoon
 {
 public:
-	int inPin;
-	int outPin;
-	int ledPin;
+	byte inPin;
+	byte outPin;
+	byte ledPin;
 
 	int ledMax;
 	int ledMin;
 
 	int inhaleTime;
 	int exhaleTime;
-	unsigned long waitTime;
+	long waitTime;
 	int waitTimeF;
+	int subtractor;
 
 	unsigned long T2;
 
-	int state;
+	byte state;
 
 	Adafruit_MCP23017* mcp;
 
 	Cocoon();
 	
-	void setCocoonValues(Adafruit_MCP23017* mcp, int inPin, int outPin, int ledPin); //, long inhaleTime, long exhaleTime, long waitTime, long waitTimeF);
+	void setCocoonValues(byte mcp, byte inPin, byte outPin, byte ledPin);
+	void printValues();
 	void resetCocoonValues();
 	void setCocoonTestValues();
 	void turnOff();
-	int  breatheR(unsigned long wT, unsigned long iT, unsigned long eT);
 	void breathe();
-	void breatheNoFade();
-	void breatheFaster(int P); //long wT, long wTF, long iT, long eT);
+	void breatheD(int P);
+	void breatheFaster(int P);
+	//---------------------------
 	void LEDOff();
 	void LEDOn();
 	void breathIn(); 

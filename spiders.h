@@ -14,11 +14,11 @@
 class Spider
 {
 public:
-	int fanPin;
-	int ledPin;
+	byte fanPin;
+	byte ledPin;
 
-	int fanState;
-	int ledState;
+	byte fanState;
+	byte ledState;
 	int stepperState;
 
 	unsigned long tFan;
@@ -30,7 +30,7 @@ public:
 
 	Spider();
 
-	void setSpiderValues(Stepper* spiderStepper, Adafruit_MCP23017* mcp, int fanPin, int ledPin);
+	void setSpiderValues(byte spiderStepper, byte fanPin, byte ledPin);
 	void raiseSpider(int distance, int speed);
 	void lowerSpider(int distance, int speed);
 	// void animateSpider(int duration, int interval);
