@@ -8,7 +8,7 @@
 
 extern volatile bool ISRFlag;
 extern volatile bool TIMERFlag;
-// extern volatile unsigned long ISRTime;
+extern volatile unsigned long timeLeft;
 
 Cocoon::Cocoon(){}
 
@@ -65,7 +65,7 @@ void Cocoon::resetCocoonValues()
 	this->waitTime   = random(1000, 50000); 	// waitTime;
 	this->waitTimeF  = (int)random(5, 200);			// waitTimeF;
 
-	// printValues();
+	printValues();
 }
 
 void Cocoon::breathe() 
@@ -191,39 +191,42 @@ void Cocoon::breatheFaster(int P) //long wT, long wTF, long iT, long eT)
 }
 
 
-void Cocoon::breatheD(int P) //long wT, long wTF, long iT, long eT) 
+void Cocoon::breatheD(bool P) // bool* ISRFlag, bool* TIMERFlag, bool P) //long wT, long wTF, long iT, long eT) 
 {	
 	unsigned long T1 = millis();
 	long subtractor;
-	int lockout = 0;
-	// static bool flag;
+	long K;
 
-	// If state == waiting and time exceeds wait, then inhale
+	// RESET 
 	if(state == 0)
 	{
-		long K = AWAKETIME / waitTime;
-		subtractor = (long)((waitTime - waitTimeF) / K);
-		if(P)
-		{
-			Serial.println(ISRFlag);
-			Serial.print(waitTime);	
-			Serial.print(", ");
-			Serial.print(subtractor);		
-			Serial.print(", ");
-			Serial.println(K);	
-		}
-		Serial.println("m");
+		K = 1;
+		subtractor = 1;
+		this->turnOff();
+		this->resetCocoonValues();
 		state = 1;
 	}
+	// WAIT 	If state == waiting and time exceeds wait, then inhale
 	if((state == 1) && (T1 - T2 >= waitTime)) 
 	{
-		state = 2; 
 		T2 = T1; 
 		mcp->digitalWrite(inPin, HIGH);
 		tlc_addFade(ledPin, ledMin, ledMax, millis(), millis() + inhaleTime);
 
-		if(ISRFlag)
+		if((ISRFlag == 0) && (TIMERFlag == 0))
 		{
+			state = 2; 
+		}
+		else if((ISRFlag == 1) && (TIMERFlag == 0))
+		{
+			K = timeLeft / waitTime;
+
+			if(K >= 1)
+			{
+				subtractor = (long)((waitTime - waitTimeF) / K);				
+			}
+
+
 			if((waitTime - (long)subtractor) > 0)
 			{
 				waitTime = waitTime - subtractor;
@@ -231,23 +234,43 @@ void Cocoon::breatheD(int P) //long wT, long wTF, long iT, long eT)
 			else
 			{
 				waitTime = waitTimeF;
-				inhaleTime = 2000L;
-				exhaleTime = 1000L;
 			}	
+
+			state = 2; 
 		}
-		tlc_updateFades();
+		// else if((ISRFlag == 0) && (timeLeft <= 10))
+		// {
+		// 	state = 0;
+		// }
+
+
+		// if(P)
+		// {
+			Serial.println("-------------");			
+			Serial.println(TIMERFlag);
+			Serial.println(timeLeft);
+			Serial.println(ISRFlag);
+			Serial.print(waitTime);	
+			Serial.print(", ");
+			Serial.print(K);	
+			Serial.print(", ");
+			Serial.println(subtractor);
+		// }
+
 	}
-	// If state == inhale and time exceeds inhale, then exhale
+	// INHALE 	If state == inhale and time exceeds inhale, then exhale
 	else if ((state == 2) && (T1 - T2 >= inhaleTime)) 
 	{
-		// Serial.println("S1->S2");
-		state = 3; 
 		T2 = T1; 
 		mcp->digitalWrite(inPin, LOW);
 		mcp->digitalWrite(outPin, HIGH);
 		tlc_addFade(ledPin, ledMax, ledMin, millis(), millis() + exhaleTime);
 
-		if(ISRFlag)
+		if((ISRFlag == 0) && (TIMERFlag == 0))
+		{
+			state = 3; 
+		}
+		else if((ISRFlag == 1) && (TIMERFlag == 0))
 		{
 			if(inhaleTime < 2000L)
 			{
@@ -257,18 +280,25 @@ void Cocoon::breatheD(int P) //long wT, long wTF, long iT, long eT)
 			{
 				inhaleTime = 2000L;
 			}
+
+			state = 3; 
 		}
-		tlc_updateFades();
+		// else if((ISRFlag == 0) && (timeLeft <= 10))
+		// {
+		// 	state = 0;
+		// }
 	} 
-	// If state == exhale and time exceeds exhale, then wait
+	// EXHALE 	If state == exhale and time exceeds exhale, then wait
 	else if ((state == 3) && (T1 - T2 >= exhaleTime)) 
 	{
-		// Serial.println("S2->S0");
-		state = 4; 
 		T2 = T1; 
 		mcp->digitalWrite(outPin, LOW);
 
-		if(ISRFlag)
+		if((ISRFlag == 0) && (TIMERFlag == 0))
+		{
+			state = 1; 
+		}
+		else if((ISRFlag == 0) && (TIMERFlag == 0))
 		{
 			if(exhaleTime < 1500L)
 			{
@@ -277,45 +307,21 @@ void Cocoon::breatheD(int P) //long wT, long wTF, long iT, long eT)
 			else
 			{
 				exhaleTime = 1500L;
-			}		
-		}
-		if(P)
-		{
-			Serial.println(TIMERFlag);
-			Serial.println(ISRFlag);
-			Serial.print(waitTime);	
-			Serial.print(", ");
-			Serial.println(subtractor);
-		}
-		// tlc_updateFades();
-	} 
-	else if(state == 4)
-	{
-		// if(T1 - ISRTime > AWAKETIME)
-		// {
-			if((!ISRFlag) && (TIMERFlag))
-			{
-				this->turnOff();
-				this->resetCocoonValues();
-				state = 0;
-			}
-			else
-			{
-				state = 0;
-			}
-		// }
-		// else
-		// {
-		// 	state = 1;
-		// }
+			}	
 
-		if(P)
-		{
-			Serial.println(ISRFlag);
-			Serial.println(TIMERFlag);
+			state = 1; 
 		}
-		// tlc_updateFades();
-	}	
+		// else if((ISRFlag == 0) && (timeLeft <= 10))
+		// {
+		// 	state = 0;
+		// }
+	}
+	else if(timeLeft <= 10) 
+	{
+		state = 0;
+	}
+	
+	tlc_updateFades();	
 }
 
 // ------------------------------------------------------

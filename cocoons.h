@@ -47,7 +47,7 @@ public:
 	void setCocoonTestValues();
 	void turnOff();
 	void breathe();
-	void breatheD(int P);
+	void breatheD(bool P);
 	void breatheFaster(int P);
 	//---------------------------
 	void LEDOff();

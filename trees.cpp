@@ -101,29 +101,49 @@ int Tree::setupSpiders(const byte spiderValues[2][4])
 }
 
 //-------------------------------------------------------------------
+// void Tree::chirp(bool flag)
+// {
+// 	long onInterval = random(5000,50000);
+// 	long offInterval = 200L;
 
-void Tree::chirp(long interval)
-{
-	long onInterval = interval;
-	long offInterval = 200L;
+// 	unsigned long T1 = millis();
 
-	unsigned long T1 = millis();
+// 	if((chirpState == LOW) && (T1 - T2 >= offInterval)) 
+// 	{
+// 		chirpState = HIGH;
+// 		T2 = T1; 
+// 		digitalWrite(chirpPin, chirpState);
+// 	}
+// 	if((chirpState == HIGH) && (T1 - T2 >= onInterval)) 
+// 	{
+// 		chirpState = LOW;
+// 		T2 = T1; 
+// 		digitalWrite(chirpPin, chirpState);
+// 	}
+// }
 
-	if((chirpState == LOW) && (T1 - T2 >= offInterval)) 
-	{
-		Serial.println("HEY!");
-		chirpState = HIGH;
-		T2 = T1; 
-		digitalWrite(chirpPin, chirpState);
-	}
-	if((chirpState == HIGH) && (T1 - T2 >= onInterval)) 
-	{
-		Serial.println("Hi!");
-		chirpState = LOW;
-		T2 = T1; 
-		digitalWrite(chirpPin, chirpState);
-	}
-}
+// void Tree::chirp(long interval)
+// {
+// 	long onInterval = interval;
+// 	long offInterval = 200L;
+
+// 	unsigned long T1 = millis();
+
+// 	if((chirpState == LOW) && (T1 - T2 >= offInterval)) 
+// 	{
+// 		Serial.println("HEY!");
+// 		chirpState = HIGH;
+// 		T2 = T1; 
+// 		digitalWrite(chirpPin, chirpState);
+// 	}
+// 	if((chirpState == HIGH) && (T1 - T2 >= onInterval)) 
+// 	{
+// 		Serial.println("Hi!");
+// 		chirpState = LOW;
+// 		T2 = T1; 
+// 		digitalWrite(chirpPin, chirpState);
+// 	}
+// }
 
 void Tree::drone(long interval)
 {
@@ -197,6 +217,23 @@ void Tree::breatheAll()
     this->cocoons[10].breatheD(0);
     this->cocoons[11].breatheD(1);
 }
+
+// void Tree::breatheAllArgs(bool* ISRFlag, bool* TIMERFlag)
+// {
+//     this->cocoons[0].breatheD(0);
+//     this->cocoons[1].breatheD(0);
+//     this->cocoons[2].breatheD(0);
+//     this->cocoons[3].breatheD(0);
+//     this->cocoons[4].breatheD(0);
+//     this->cocoons[5].breatheD(0);
+//     this->cocoons[6].breatheD(0);
+//     this->cocoons[7].breatheD(0);
+//     this->cocoons[8].breatheD(0);
+//     this->cocoons[9].breatheD(0);
+//     this->cocoons[10].breatheD(0);
+//     this->cocoons[11].breatheD(1);
+// }
+
 
 void Tree::breatheFasterAll()
 {
