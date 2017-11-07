@@ -287,7 +287,7 @@ void Cocoon::breatheD(int P) //long wT, long wTF, long iT, long eT)
 			Serial.print(", ");
 			Serial.println(subtractor);
 		}
-		tlc_updateFades();
+		// tlc_updateFades();
 	} 
 	else if(state == 4)
 	{
@@ -314,7 +314,7 @@ void Cocoon::breatheD(int P) //long wT, long wTF, long iT, long eT)
 			Serial.println(ISRFlag);
 			Serial.println(TIMERFlag);
 		}
-		tlc_updateFades();
+		// tlc_updateFades();
 	}	
 }
 
