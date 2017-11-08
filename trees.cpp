@@ -263,8 +263,9 @@ void Tree::testCocoonsAll()
 
 void Tree::testCocoons()
 {
-	for(int i = 0; i < nCocoons; i++)
+	for(int i = 6; i < 12; i++)//nCocoons; i++)
 	{
+		Serial.println(i);
 		this->cocoons[i].setCocoonTestValues();
 		// Test Fans
 		this->cocoons[i].breathIn();

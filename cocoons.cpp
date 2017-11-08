@@ -5,10 +5,11 @@
 #include "Adafruit_MCP23017.h"
 #include "Tlc5940.h"
 #include "tlc_fades.h"
+#include "seedvalues.h"
 
 extern volatile bool ISRFlag;
 extern volatile bool TIMERFlag;
-extern volatile unsigned long timeLeft;
+extern volatile unsigned long ISRTime;
 
 Cocoon::Cocoon(){}
 
@@ -60,10 +61,10 @@ void Cocoon::setCocoonTestValues()
 
 void Cocoon::resetCocoonValues()
 {
-	this->inhaleTime = (int)random(500, 1000); 		//inhaleTime;
-	this->exhaleTime = (int)random(500, 1000); 		//exhaleTime;
-	this->waitTime   = random(1000, 50000); 	// waitTime;
-	this->waitTimeF  = (int)random(5, 200);			// waitTimeF;
+	this->inhaleTime = (int)random(500, 1000);
+	this->exhaleTime = (int)random(500, 1000);
+	this->waitTime   = random(1000, 50000); 	
+	this->waitTimeF  = (int)random(5, 200);		
 
 	printValues();
 }
@@ -112,6 +113,124 @@ void Cocoon::breathe()
 
 	tlc_updateFades();
 }
+
+
+
+void Cocoon::breatheD(bool P) // bool* ISRFlag, bool* TIMERFlag, bool P) //long wT, long wTF, long iT, long eT) 
+{	
+	unsigned long T1 = millis();
+	long subtractor;
+	long K;
+	long L;
+	bool resetFlag;
+
+	// RESET 
+	if(state == 0)
+	{
+		L = 0;
+		K = 1;
+		subtractor = 1;
+		resetFlag = 0;
+		state = 1;
+	}
+	// WAIT 	If state == waiting and time exceeds wait, then inhale
+	if((state == 1) && (T1 - T2 >= waitTime)) 
+	{
+		T2 = T1; 
+		mcp->digitalWrite(inPin, HIGH);
+		tlc_addFade(ledPin, ledMin, ledMax, millis(), millis() + inhaleTime);
+
+		if(ISRFlag)
+		{
+			resetFlag = 1;
+			L = AWAKETIME - (T1 - ISRTime); 
+			K = L / waitTime;
+
+			if(K >= 1)
+			{
+				subtractor = (long)((waitTime - waitTimeF) / K);				
+			}
+
+			if((waitTime - (long)subtractor) > 0)
+			{
+				waitTime = waitTime - subtractor;
+			}
+			else
+			{
+				waitTime = waitTimeF;
+			}	
+		}
+
+		state = 2; 
+
+		if(P)
+		{
+			Serial.println("-------------");			
+			Serial.println(ISRTime);
+			Serial.println(ISRFlag);	
+			Serial.print(resetFlag);	
+			Serial.print(", ");
+			Serial.print(L);	
+			Serial.print(", ");
+			Serial.print(K);	
+			Serial.print(", ");
+			Serial.print(subtractor);
+			Serial.print(", ");
+			Serial.println(waitTime);
+		}
+	}
+	// INHALE 	If state == inhale and time exceeds inhale, then exhale
+	else if ((state == 2) && (T1 - T2 >= inhaleTime)) 
+	{
+		T2 = T1; 
+		mcp->digitalWrite(inPin, LOW);
+		mcp->digitalWrite(outPin, HIGH);
+		tlc_addFade(ledPin, ledMax, ledMin, millis(), millis() + exhaleTime);
+
+		if(ISRFlag)
+		{
+			resetFlag = 1;
+			if(inhaleTime < 2000L)
+			{
+				inhaleTime = inhaleTime + 50L;
+			}
+			else
+			{
+				inhaleTime = 2000L;
+			}
+		}
+		state = 3; 
+	} 
+	// EXHALE 	If state == exhale and time exceeds exhale, then wait
+	else if ((state == 3) && (T1 - T2 >= exhaleTime)) 
+	{
+		T2 = T1; 
+		mcp->digitalWrite(outPin, LOW);
+
+		if(ISRFlag)
+		{
+			resetFlag = 1;
+			if(exhaleTime < 1500L)
+			{
+				exhaleTime = exhaleTime + 35L;
+			}
+			else
+			{
+				exhaleTime = 1500L;
+			}	
+		}
+
+		state = 1; 
+	}
+	else if((T1 - ISRTime >= AWAKETIME) && resetFlag) 
+	{
+		// this->turnOff();
+		this->resetCocoonValues();
+	}
+	
+	tlc_updateFades();	
+}
+
 
 void Cocoon::breatheFaster(int P) //long wT, long wTF, long iT, long eT) 
 {	
@@ -191,138 +310,138 @@ void Cocoon::breatheFaster(int P) //long wT, long wTF, long iT, long eT)
 }
 
 
-void Cocoon::breatheD(bool P) // bool* ISRFlag, bool* TIMERFlag, bool P) //long wT, long wTF, long iT, long eT) 
-{	
-	unsigned long T1 = millis();
-	long subtractor;
-	long K;
+// void Cocoon::breatheD(bool P) // bool* ISRFlag, bool* TIMERFlag, bool P) //long wT, long wTF, long iT, long eT) 
+// {	
+// 	unsigned long T1 = millis();
+// 	long subtractor;
+// 	long K;
 
-	// RESET 
-	if(state == 0)
-	{
-		K = 1;
-		subtractor = 1;
-		this->turnOff();
-		this->resetCocoonValues();
-		state = 1;
-	}
-	// WAIT 	If state == waiting and time exceeds wait, then inhale
-	if((state == 1) && (T1 - T2 >= waitTime)) 
-	{
-		T2 = T1; 
-		mcp->digitalWrite(inPin, HIGH);
-		tlc_addFade(ledPin, ledMin, ledMax, millis(), millis() + inhaleTime);
+// 	// RESET 
+// 	if(state == 0)
+// 	{
+// 		K = 1;
+// 		subtractor = 1;
+// 		this->turnOff();
+// 		this->resetCocoonValues();
+// 		state = 1;
+// 	}
+// 	// WAIT 	If state == waiting and time exceeds wait, then inhale
+// 	if((state == 1) && (T1 - T2 >= waitTime)) 
+// 	{
+// 		T2 = T1; 
+// 		mcp->digitalWrite(inPin, HIGH);
+// 		tlc_addFade(ledPin, ledMin, ledMax, millis(), millis() + inhaleTime);
 
-		if((ISRFlag == 0) && (TIMERFlag == 0))
-		{
-			state = 2; 
-		}
-		else if((ISRFlag == 1) && (TIMERFlag == 0))
-		{
-			K = timeLeft / waitTime;
+// 		if((ISRFlag == 0) && (TIMERFlag == 0))
+// 		{
+// 			state = 2; 
+// 		}
+// 		else if((ISRFlag == 1) && (TIMERFlag == 0))
+// 		{
+// 			K = timeLeft / waitTime;
 
-			if(K >= 1)
-			{
-				subtractor = (long)((waitTime - waitTimeF) / K);				
-			}
-
-
-			if((waitTime - (long)subtractor) > 0)
-			{
-				waitTime = waitTime - subtractor;
-			}
-			else
-			{
-				waitTime = waitTimeF;
-			}	
-
-			state = 2; 
-		}
-		// else if((ISRFlag == 0) && (timeLeft <= 10))
-		// {
-		// 	state = 0;
-		// }
+// 			if(K >= 1)
+// 			{
+// 				subtractor = (long)((waitTime - waitTimeF) / K);				
+// 			}
 
 
-		// if(P)
-		// {
-			Serial.println("-------------");			
-			Serial.println(TIMERFlag);
-			Serial.println(timeLeft);
-			Serial.println(ISRFlag);
-			Serial.print(waitTime);	
-			Serial.print(", ");
-			Serial.print(K);	
-			Serial.print(", ");
-			Serial.println(subtractor);
-		// }
+// 			if((waitTime - (long)subtractor) > 0)
+// 			{
+// 				waitTime = waitTime - subtractor;
+// 			}
+// 			else
+// 			{
+// 				waitTime = waitTimeF;
+// 			}	
 
-	}
-	// INHALE 	If state == inhale and time exceeds inhale, then exhale
-	else if ((state == 2) && (T1 - T2 >= inhaleTime)) 
-	{
-		T2 = T1; 
-		mcp->digitalWrite(inPin, LOW);
-		mcp->digitalWrite(outPin, HIGH);
-		tlc_addFade(ledPin, ledMax, ledMin, millis(), millis() + exhaleTime);
+// 			state = 2; 
+// 		}
+// 		// else if((ISRFlag == 0) && (timeLeft <= 10))
+// 		// {
+// 		// 	state = 0;
+// 		// }
 
-		if((ISRFlag == 0) && (TIMERFlag == 0))
-		{
-			state = 3; 
-		}
-		else if((ISRFlag == 1) && (TIMERFlag == 0))
-		{
-			if(inhaleTime < 2000L)
-			{
-				inhaleTime = inhaleTime + 50L;
-			}
-			else
-			{
-				inhaleTime = 2000L;
-			}
 
-			state = 3; 
-		}
-		// else if((ISRFlag == 0) && (timeLeft <= 10))
-		// {
-		// 	state = 0;
-		// }
-	} 
-	// EXHALE 	If state == exhale and time exceeds exhale, then wait
-	else if ((state == 3) && (T1 - T2 >= exhaleTime)) 
-	{
-		T2 = T1; 
-		mcp->digitalWrite(outPin, LOW);
+// 		// if(P)
+// 		// {
+// 		// 	Serial.println("-------------");			
+// 		// 	Serial.println(TIMERFlag);
+// 		// 	Serial.println(timeLeft);
+// 		// 	Serial.println(ISRFlag);
+// 		// 	Serial.print(waitTime);	
+// 		// 	Serial.print(", ");
+// 		// 	Serial.print(K);	
+// 		// 	Serial.print(", ");
+// 		// 	Serial.println(subtractor);
+// 		// }
 
-		if((ISRFlag == 0) && (TIMERFlag == 0))
-		{
-			state = 1; 
-		}
-		else if((ISRFlag == 0) && (TIMERFlag == 0))
-		{
-			if(exhaleTime < 1500L)
-			{
-				exhaleTime = exhaleTime + 35L;
-			}
-			else
-			{
-				exhaleTime = 1500L;
-			}	
+// 	}
+// 	// INHALE 	If state == inhale and time exceeds inhale, then exhale
+// 	else if ((state == 2) && (T1 - T2 >= inhaleTime)) 
+// 	{
+// 		T2 = T1; 
+// 		mcp->digitalWrite(inPin, LOW);
+// 		mcp->digitalWrite(outPin, HIGH);
+// 		tlc_addFade(ledPin, ledMax, ledMin, millis(), millis() + exhaleTime);
 
-			state = 1; 
-		}
-		// else if((ISRFlag == 0) && (timeLeft <= 10))
-		// {
-		// 	state = 0;
-		// }
-	}
-	else if(timeLeft <= 10) 
-	{
-		state = 0;
-	}
+// 		if((ISRFlag == 0) && (TIMERFlag == 0))
+// 		{
+// 			state = 3; 
+// 		}
+// 		else if((ISRFlag == 1) && (TIMERFlag == 0))
+// 		{
+// 			if(inhaleTime < 2000L)
+// 			{
+// 				inhaleTime = inhaleTime + 50L;
+// 			}
+// 			else
+// 			{
+// 				inhaleTime = 2000L;
+// 			}
+
+// 			state = 3; 
+// 		}
+// 		// else if((ISRFlag == 0) && (timeLeft <= 10))
+// 		// {
+// 		// 	state = 0;
+// 		// }
+// 	} 
+// 	// EXHALE 	If state == exhale and time exceeds exhale, then wait
+// 	else if ((state == 3) && (T1 - T2 >= exhaleTime)) 
+// 	{
+// 		T2 = T1; 
+// 		mcp->digitalWrite(outPin, LOW);
+
+// 		if((ISRFlag == 0) && (TIMERFlag == 0))
+// 		{
+// 			state = 1; 
+// 		}
+// 		else if((ISRFlag == 0) && (TIMERFlag == 0))
+// 		{
+// 			if(exhaleTime < 1500L)
+// 			{
+// 				exhaleTime = exhaleTime + 35L;
+// 			}
+// 			else
+// 			{
+// 				exhaleTime = 1500L;
+// 			}	
+
+// 			state = 1; 
+// 		}
+// 		// else if((ISRFlag == 0) && (timeLeft <= 10))
+// 		// {
+// 		// 	state = 0;
+// 		// }
+// 	}
+// 	else if(timeLeft <= 10) 
+// 	{
+// 		state = 0;
+// 	}
 	
-	tlc_updateFades();	
-}
+// 	tlc_updateFades();	
+// }
 
 // ------------------------------------------------------
 
