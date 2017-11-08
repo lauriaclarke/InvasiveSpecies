@@ -125,8 +125,9 @@ void Cocoon::breatheD(bool P) // bool* ISRFlag, bool* TIMERFlag, bool P) //long 
 	bool resetFlag;
 
 	// RESET 
-	if(state == 0)
+	if(state == 0) // && (T1 - T2 >= 10)
 	{
+		T2 = T1;
 		L = 0;
 		K = 1;
 		subtractor = 1;
@@ -160,6 +161,11 @@ void Cocoon::breatheD(bool P) // bool* ISRFlag, bool* TIMERFlag, bool P) //long 
 				waitTime = waitTimeF;
 			}	
 		}
+		else
+		{
+			waitTime = random(MIN_WAIT, MAX_WAIT);
+			waitTimeF = random(MIN_WAIT_F, MAX_WAIT_F);
+		}
 
 		state = 2; 
 
@@ -176,7 +182,11 @@ void Cocoon::breatheD(bool P) // bool* ISRFlag, bool* TIMERFlag, bool P) //long 
 			Serial.print(", ");
 			Serial.print(subtractor);
 			Serial.print(", ");
-			Serial.println(waitTime);
+			Serial.print(inhaleTime);
+			Serial.print(", ");
+			Serial.print(exhaleTime);
+			Serial.print(", ");
+			Serial.println(waitTime);						
 		}
 	}
 	// INHALE 	If state == inhale and time exceeds inhale, then exhale
@@ -199,6 +209,10 @@ void Cocoon::breatheD(bool P) // bool* ISRFlag, bool* TIMERFlag, bool P) //long 
 				inhaleTime = 2000L;
 			}
 		}
+		else
+		{
+			inhaleTime = random(MIN_INHALE, MAX_INHALE);
+		}
 		state = 3; 
 	} 
 	// EXHALE 	If state == exhale and time exceeds exhale, then wait
@@ -206,7 +220,6 @@ void Cocoon::breatheD(bool P) // bool* ISRFlag, bool* TIMERFlag, bool P) //long 
 	{
 		T2 = T1; 
 		mcp->digitalWrite(outPin, LOW);
-
 		if(ISRFlag)
 		{
 			resetFlag = 1;
@@ -219,13 +232,16 @@ void Cocoon::breatheD(bool P) // bool* ISRFlag, bool* TIMERFlag, bool P) //long 
 				exhaleTime = 1500L;
 			}	
 		}
-
+		else
+		{
+			exhaleTime = random(MIN_EXHALE, MAX_EXHALE);	
+		}
 		state = 1; 
 	}
 	else if((T1 - ISRTime >= AWAKETIME) && resetFlag) 
 	{
-		// this->turnOff();
-		this->resetCocoonValues();
+		// turnOff();
+		state = 0;
 	}
 	
 	tlc_updateFades();	
@@ -463,6 +479,7 @@ void Cocoon::breathOut()
 
 void Cocoon::turnOff()
 {
+	Serial.println("o");
 	this->mcp->digitalWrite(this->outPin, LOW);
 	this->mcp->digitalWrite(this->inPin, LOW);
 }

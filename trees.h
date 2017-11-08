@@ -20,6 +20,7 @@
 #include "Adafruit_MCP23017.h"
 #include "Tlc5940.h"
 #include <MCPStepper.h>
+#include "seedvalues.h"
 // #include "patternTimes.h"
 
 #define N_COCOONCS		1
@@ -43,8 +44,8 @@ public:
 	unsigned long T2;
 	Tree();
 
-	void chirp(long interval);
-	void drone(long interval);
+	void chirp(bool flag);
+	void drone(bool flag);
 	void breatheAll();
 	void breatheFasterAll();
 	void resetAllCocoons();

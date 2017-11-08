@@ -12,6 +12,7 @@
 #include <Wire.h>
 #include "Adafruit_MCP23017.h"
 #include "Tlc5940.h"
+#include "seedvalues.h"
 // #include "patternTimes.h"
 
 #define FAST_THRESHOLD	50

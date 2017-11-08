@@ -6,6 +6,7 @@
 #include "Adafruit_MCP23017.h"
 #include <MCPStepper.h>
 #include "Tlc5940.h"
+#include "seedvalues.h"
 
 
 Tree::Tree()
@@ -101,28 +102,51 @@ int Tree::setupSpiders(const byte spiderValues[2][4])
 }
 
 //-------------------------------------------------------------------
-// void Tree::chirp(bool flag)
-// {
-// 	long onInterval = random(5000,50000);
-// 	long offInterval = 200L;
+void Tree::chirp(bool flag)
+{
+	long onInterval = random(MIN_CHIRP_WAIT, MAX_CHIRP_WAIT);
+	long offInterval = 200L + CHIRP_TIME * random(MIN_CHIRPS, MAX_CHIRPS);
 
-// 	unsigned long T1 = millis();
+	unsigned long T1 = millis();
 
-// 	if((chirpState == LOW) && (T1 - T2 >= offInterval)) 
-// 	{
-// 		chirpState = HIGH;
-// 		T2 = T1; 
-// 		digitalWrite(chirpPin, chirpState);
-// 	}
-// 	if((chirpState == HIGH) && (T1 - T2 >= onInterval)) 
-// 	{
-// 		chirpState = LOW;
-// 		T2 = T1; 
-// 		digitalWrite(chirpPin, chirpState);
-// 	}
-// }
+	if((chirpState == LOW) && (T1 - T2 >= offInterval)) 
+	{
+		chirpState = HIGH;
+		T2 = T1; 
+		digitalWrite(chirpPin, chirpState);
+	}
+	if((chirpState == HIGH) && (T1 - T2 >= onInterval)) 
+	{
+		chirpState = LOW;
+		T2 = T1; 
+		digitalWrite(chirpPin, chirpState);
+	}
+}
+
+
+void Tree::drone(bool flag)
+{
+	long onInterval = random(MIN_DRONE_WAIT, MAX_DRONE_WAIT);
+	long offInterval = 200L + CHIRP_TIME * random(MIN_DRONES, MAX_DRONES);
+
+	unsigned long T1 = millis();
+
+	if((chirpState == LOW) && (T1 - T2 >= offInterval)) 
+	{
+		chirpState = HIGH;
+		T2 = T1; 
+		digitalWrite(chirpPin, chirpState);
+	}
+	if((chirpState == HIGH) && (T1 - T2 >= onInterval)) 
+	{
+		chirpState = LOW;
+		T2 = T1; 
+		digitalWrite(chirpPin, chirpState);
+	}
+}
 
 // void Tree::chirp(long interval)
+
 // {
 // 	long onInterval = interval;
 // 	long offInterval = 200L;
@@ -144,30 +168,6 @@ int Tree::setupSpiders(const byte spiderValues[2][4])
 // 		digitalWrite(chirpPin, chirpState);
 // 	}
 // }
-
-void Tree::drone(long interval)
-{
-	long onInterval = interval;
-	long offInterval = 200L;
-
-	unsigned long T1 = millis();
-
-	if((droneState == LOW) && (T1 - T2 >= offInterval)) 
-	{
-		onInterval = onInterval - 100;
-		Serial.println("HEY!");
-		droneState = HIGH;
-		T2 = T1; 
-		digitalWrite(dronePin, droneState);
-	}
-	if((chirpState == HIGH) && (T1 - T2 >= onInterval)) 
-	{
-		Serial.println("Hi!");
-		droneState = LOW;
-		T2 = T1; 
-		digitalWrite(dronePin, droneState);
-	}
-}
 
 
 void Tree::resetAllCocoons()
