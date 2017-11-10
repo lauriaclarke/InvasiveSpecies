@@ -42,10 +42,17 @@ public:
 	byte chirpState;
 	byte droneState;
 	unsigned long T2;
+	unsigned long sleepTime;
+	unsigned long awakeTime;
+	long chirpInterval;
+	long droneInterval;
+
+
 	Tree();
 
-	void chirp(bool flag);
-	void drone(bool flag);
+	void chirp();
+	void drone();
+	void stopSounds();
 	void breatheAll();
 	void breatheFasterAll();
 	void resetAllCocoons();

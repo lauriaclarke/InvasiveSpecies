@@ -21,7 +21,7 @@
 // ---------------------------
 // Sound Seed Values
 
-#define MIN_CHIRP_WAIT	1000
+#define MIN_CHIRP_WAIT	20000
 #define MAX_CHIRP_WAIT 	50000
 
 #define MIN_CHIRPS 		1
@@ -30,8 +30,8 @@
 #define CHIRP_TIME 		900
 
 
-#define MIN_DRONE_WAIT	1000
-#define MAX_DRONE_WAIT 	50000
+// #define MIN_DRONE_WAIT	AWAKETIME - 30L
+// #define MAX_DRONE_WAIT 	AWAKETIME - 30L
 
 #define MIN_DRONES 		1
 #define MAX_DRONES		3

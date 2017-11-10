@@ -49,6 +49,7 @@ public:
 	void turnOff();
 	void breathe();
 	void breatheD(bool P);
+	void blinkD(bool P);
 	void breatheFaster(int P);
 	//---------------------------
 	void LEDOff();

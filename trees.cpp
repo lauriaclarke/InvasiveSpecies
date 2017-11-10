@@ -8,16 +8,21 @@
 #include "Tlc5940.h"
 #include "seedvalues.h"
 
+extern volatile bool ISRFlag;
 
 Tree::Tree()
 {
 	this->nCocoons = 12;
 	this->nSpiders = 2;
-
-	this->chirpPin = 5;
-	this->dronePin = 6;
+	this->chirpPin = 6;
+	this->dronePin = 5;
 	this->chirpState = HIGH;
 	this->droneState = HIGH;
+	this->droneInterval = AWAKETIME - 15000L;
+	this->chirpInterval = random(MIN_CHIRP_WAIT, MAX_CHIRP_WAIT);
+
+	this->sleepTime = random(120000, 360000);	
+	this->awakeTime = random(30000, 60000);
 	this->T2 = 0;
 }
 
@@ -34,6 +39,14 @@ void Tree::setupTree(const byte cocoonValues[12][4], const byte spiderValues[1][
 	{
 		Serial.println("ERROR: Spider setup");
 	}
+
+
+	mcp2.pinMode(2, OUTPUT);
+	mcp2.pinMode(3, OUTPUT);
+	mcp2.pinMode(4, OUTPUT);	
+	mcp2.digitalWrite(2, LOW);
+	mcp2.digitalWrite(3, LOW);
+	mcp2.digitalWrite(4, LOW);
 
 	pinMode(chirpPin, OUTPUT);
 	pinMode(dronePin, OUTPUT);
@@ -90,11 +103,11 @@ int Tree::setupSpiders(const byte spiderValues[2][4])
 		// Setup Stepper
 		this->spiders[i].spiderStepper->init();
 
-		// Raise spider
-		if(this->spiders[i].stepperState == LOW)
-		{
-			this->spiders[i].raiseSpider(SPIDER_STEPS, 40);
-		}
+		// // Raise spider
+		// if(this->spiders[i].stepperState == 0)
+		// {
+		// 	this->spiders[i].raiseSpider(SPIDER_STEPS, 40);
+		// }
 	}
 
 	Serial.println("Spiders Initialized!");
@@ -102,20 +115,40 @@ int Tree::setupSpiders(const byte spiderValues[2][4])
 }
 
 //-------------------------------------------------------------------
-void Tree::chirp(bool flag)
-{
-	long onInterval = random(MIN_CHIRP_WAIT, MAX_CHIRP_WAIT);
-	long offInterval = 200L + CHIRP_TIME * random(MIN_CHIRPS, MAX_CHIRPS);
 
+void Tree::stopSounds()
+{
+	digitalWrite(chirpPin, HIGH);
+	chirpState = HIGH;
+	digitalWrite(dronePin, HIGH);
+	droneState = HIGH;
+}
+
+void Tree::chirp()
+{
+	long offInterval = 200L; // + CHIRP_TIME * random(MIN_CHIRPS, MAX_CHIRPS);
 	unsigned long T1 = millis();
 
 	if((chirpState == LOW) && (T1 - T2 >= offInterval)) 
 	{
+		if(ISRFlag)
+		{
+			if(chirpInterval - 3000L >= 500)
+			{
+		    	chirpInterval = chirpInterval - 3000L;
+			}
+			else
+			{
+				chirpInterval = random(500, 1000);
+			}
+	    	// Serial.println(chirpInterval);
+		}
+
 		chirpState = HIGH;
 		T2 = T1; 
 		digitalWrite(chirpPin, chirpState);
 	}
-	if((chirpState == HIGH) && (T1 - T2 >= onInterval)) 
+	if((chirpState == HIGH) && (T1 - T2 >= chirpInterval)) 
 	{
 		chirpState = LOW;
 		T2 = T1; 
@@ -124,25 +157,33 @@ void Tree::chirp(bool flag)
 }
 
 
-void Tree::drone(bool flag)
+void Tree::drone()
 {
-	long onInterval = random(MIN_DRONE_WAIT, MAX_DRONE_WAIT);
-	long offInterval = 200L + CHIRP_TIME * random(MIN_DRONES, MAX_DRONES);
+	// long onInterval = random(MIN_DRONE_WAIT, MAX_DRONE_WAIT);
+	long offInterval = 200L; //+ CHIRP_TIME * random(MIN_DRONES, MAX_DRONES);
 
 	unsigned long T1 = millis();
 
-	if((chirpState == LOW) && (T1 - T2 >= offInterval)) 
+	if(ISRFlag)
 	{
-		chirpState = HIGH;
-		T2 = T1; 
-		digitalWrite(chirpPin, chirpState);
+		if((droneState == LOW) && (T1 - T2 >= offInterval)) 
+		{
+			droneState = HIGH;
+			T2 = T1; 
+			digitalWrite(dronePin, droneState);
+		}
+		if((droneState == HIGH) && (T1 - T2 >= droneInterval)) 
+		{
+			droneState = LOW;
+			T2 = T1; 
+			digitalWrite(dronePin, droneState);
+		}
 	}
-	if((chirpState == HIGH) && (T1 - T2 >= onInterval)) 
+	else
 	{
-		chirpState = LOW;
-		T2 = T1; 
-		digitalWrite(chirpPin, chirpState);
+		digitalWrite(dronePin, HIGH);
 	}
+
 }
 
 // void Tree::chirp(long interval)
@@ -211,7 +252,7 @@ void Tree::breatheAll()
     this->cocoons[4].breatheD(0);
     this->cocoons[5].breatheD(0);
     this->cocoons[6].breatheD(0);
-    this->cocoons[7].breatheD(0);
+    this->cocoons[7].blinkD(0);
     this->cocoons[8].breatheD(0);
     this->cocoons[9].breatheD(0);
     this->cocoons[10].breatheD(0);
@@ -283,24 +324,25 @@ void Tree::testSpiders()
 {
 	for(int i = 0; i < nSpiders; i++)
 	{
+
 		// Set initial time spider turns on
 		this->spiders[i].tOn = millis();
 
-		this->spiders[i].spinFans(1000, 1000);
+		// this->spiders[i].spinFans(1000, 1000);
 		this->spiders[i].blinkLED(2000, 2000);
 		
-		if(this->spiders[i].stepperState == 0)
-		{
-			this->spiders[i].raiseSpider(SPIDER_STEPS, 40);
-		}
-		else if(this->spiders[i].stepperState == SPIDER_STEPS)
-		{
-			this->spiders[i].lowerSpider(SPIDER_STEPS, 40);
-		}
-		else
-		{
-			this->spiders[i].lowerSpider(STEPS_PER_REV, 40);
-		}
+		// if(this->spiders[i].stepperState == 0)
+		// {
+		// 	this->spiders[i].raiseSpider(SPIDER_STEPS, 40);
+		// }
+		// else if(this->spiders[i].stepperState == SPIDER_STEPS)
+		// {
+		// 	this->spiders[i].lowerSpider(SPIDER_STEPS, 40);
+		// }
+		// else
+		// {
+		// 	this->spiders[i].lowerSpider(STEPS_PER_REV, 40);
+		// }
 	}
 }
 
